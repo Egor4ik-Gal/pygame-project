@@ -13,13 +13,11 @@ pr2.set_colorkey((255, 255, 255))
 all_sprites = pygame.sprite.Group()
 screen = pygame.display.set_mode(size)
 screen.blit(pr1, (0, 0))
-# class Person(pygame.sprite.Sprite):
-#     def __init__(self):
 person = pygame.sprite.Sprite(all_sprites)
 person.image = pr1
 person.rect = person.image.get_rect()
 person.rect.x = 0
-person.rect.y = h - 156 - 49
+person.rect.y = h - 205
 
 running = True
 while running:
@@ -28,11 +26,13 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.KEYDOWN:
-            if event.key == 100:
-                person.rect.x += speed
+            if event.key == 100 or event.key == 1073741903:
+                if person.rect.x + 78 <= w:
+                    person.rect.x += speed
                 person.image = pr1
-            if event.key == 97:
-                person.rect.x -= speed
+            if event.key == 97 or event.key == 1073741904:
+                if person.rect.x != 0:
+                    person.rect.x -= speed
                 person.image = pr2
         all_sprites.draw(screen)
         clock.tick(fps)
