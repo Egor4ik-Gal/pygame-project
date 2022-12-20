@@ -15,6 +15,55 @@ def load_image(name, colorkey=None):
         image = image.convert_alpha()
     return image
 
+class Board:
+    def __init__(self, screen):
+        self.width = 10
+        self.height = 10
+        self.board = [[0] * 10 for _ in range(10)]
+        self.left = 175
+        self.top = 40
+        self.cell_size = 30
+        self.render(screen)
+
+    def set_view(self, left, top, cell_size):
+        self.left = left
+        self.top = top
+        self.cell_size = cell_size
+
+    def on_click(self, cell):
+        print(cell)
+        for i in range(self.width):
+            self.board[cell[1]][i] = (self.board[cell[1]][i] + 1) % 2
+        for i in range(self.height):
+            if i == cell[1]:
+                continue
+            self.board[i][cell[0]] = (self.board[i][cell[0]] + 1) % 2
+
+    def get_cell(self, mouse_pos):
+        cell_x = (mouse_pos[0] - self.left) // self.cell_size
+        cell_y = (mouse_pos[1] - self.top) // self.cell_size
+        if cell_x < 0 or cell_x >= self.width or cell_y < 0 or cell_y >= self.height:
+            return None
+        return cell_x, cell_y
+
+    def get_click(self, mouse_pos):
+        cell = self.get_cell(mouse_pos)
+        if cell:
+            self.on_click(cell)
+        else:
+            print(cell)
+
+    def render(self, screen):
+        colors = [pygame.Color("black"), pygame.Color("white")]
+        for y in range(self.height):
+            for x in range(self.width):
+                # pygame.draw.rect(screen, colors[self.board[y][x]], (
+                #     x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
+                #     self.cell_size))
+                pygame.draw.rect(screen, pygame.Color("white"), (
+                    x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
+                    self.cell_size), 1)
+
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, *group):
@@ -165,12 +214,25 @@ class CatchingBalls:
                 return True
 
 
+class SearchEmoji(Board):
+    def __init__(self, screen):
+        self.screen = screen
+        pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
+        super().__init__(screen)
+        self.desired_emoji = f'emoji{randrange(1, 31)}.png'
+        font = pygame.font.Font(None, 30)
+        text = font.render("Найдите:", True, (0, 0, 0))
+        text_x = 155
+        text_y = 10
+        screen.blit(text, (text_x, text_y))
+
 def running():
     pygame.init()
     size = 650, 350
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption('Игра')
     CatchingBalls(screen)
+    # SearchEmoji(screen)
     pygame.display.flip()
     running = True
 
