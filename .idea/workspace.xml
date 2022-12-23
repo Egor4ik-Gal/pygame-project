@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2ffaac0c-5681-44d7-837b-3507a76d3f89" name="Changes" comment="room-and-char">
+    <list default="true" id="2ffaac0c-5681-44d7-837b-3507a76d3f89" name="Changes" comment="room-and-char-border">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -72,7 +72,14 @@
       <option name="project" value="LOCAL" />
       <updated>1671300971286</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="room-and-char-border">
+      <created>1671301794812</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1671301794812</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -101,6 +108,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="room-and-char" />
-    <option name="LAST_COMMIT_MESSAGE" value="room-and-char" />
+    <MESSAGE value="room-and-char-border" />
+    <option name="LAST_COMMIT_MESSAGE" value="room-and-char-border" />
   </component>
 </project>
