@@ -32,12 +32,6 @@ class Board:
 
     def on_click(self, cell):
         print(cell)
-        for i in range(self.width):
-            self.board[cell[1]][i] = (self.board[cell[1]][i] + 1) % 2
-        for i in range(self.height):
-            if i == cell[1]:
-                continue
-            self.board[i][cell[0]] = (self.board[i][cell[0]] + 1) % 2
 
     def get_cell(self, mouse_pos):
         cell_x = (mouse_pos[0] - self.left) // self.cell_size
@@ -49,9 +43,9 @@ class Board:
     def get_click(self, mouse_pos):
         cell = self.get_cell(mouse_pos)
         if cell:
-            self.on_click(cell)
-        else:
-            print(cell)
+            return self.on_click(cell)
+        # else:
+        #     print(cell)
 
     def render(self, screen):
         colors = [pygame.Color("black"), pygame.Color("white")]
@@ -218,21 +212,125 @@ class SearchEmoji(Board):
     def __init__(self, screen):
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
+        self.n = randrange(1, 31)
+        self.desired_emoji = load_image(f'emoji{self.n}.png')
+        screen.blit(self.desired_emoji, (250, 6))
+        self.desired_emoji_coords = (randrange(10), randrange(10))
         super().__init__(screen)
-        self.desired_emoji = f'emoji{randrange(1, 31)}.png'
         font = pygame.font.Font(None, 30)
         text = font.render("Найдите:", True, (0, 0, 0))
         text_x = 155
         text_y = 10
         screen.blit(text, (text_x, text_y))
+        self.time = 19
+        text2 = font.render(str(self.time), True, (0, 0, 0))
+        text2_x = 450
+        text2_y = 10
+        screen.blit(text2, (text2_x, text2_y))
+        if self.playing():
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы победили!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+        else:
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы проиграли!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+
+    def playing(self):
+        running = True
+
+        TIMERUNOUT = pygame.USEREVENT + 1
+        pygame.time.set_timer(TIMERUNOUT, 20000)
+        TIMER = pygame.USEREVENT + 2
+        pygame.time.set_timer(TIMER, 1000)
+
+        a = 'playing'
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.get_click(event.pos):
+                        a = 'win'
+                if event.type == TIMERUNOUT:
+                    a = 'defeat'
+                if event.type == TIMER:
+                    self.time -= 1
+            if a == 'win':
+                return True
+            if a == 'defeat':
+                return False
+            pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
+            self.screen.blit(self.desired_emoji, (250, 6))
+            font = pygame.font.Font(None, 30)
+            text = font.render("Найдите:", True, (0, 0, 0))
+            text_x = 155
+            text_y = 10
+            self.screen.blit(text, (text_x, text_y))
+            text2 = font.render(str(self.time), True, (0, 0, 0))
+            text2_x = 450
+            text2_y = 10
+            self.screen.blit(text2, (text2_x, text2_y))
+            self.render(self.screen)
+            pygame.display.flip()
+
+    def render(self, screen):
+        for y in range(self.height):
+            for x in range(self.width):
+                # pygame.draw.rect(screen, colors[self.board[y][x]], (
+                #     x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
+                #     self.cell_size))
+
+                # pygame.draw.rect(screen, pygame.Color("white"), (
+                #     x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
+                #     self.cell_size), 1)
+                if self.board[x][y] == 0:
+                    if (x, y) == self.desired_emoji_coords:
+                        self.board[x][y] = self.n
+                        self.screen.blit(self.desired_emoji,
+                                        (x * self.cell_size + self.left, y * self.cell_size + self.top,
+                                        self.cell_size, self.cell_size))
+                    else:
+                        n = randrange(1, 31)
+                        while n == self.n:
+                            n = randrange(1, 31)
+                        emoji = load_image(f'emoji{n}.png')
+                        self.board[x][y] = n
+                        self.screen.blit(emoji, (x * self.cell_size + self.left, y * self.cell_size + self.top,
+                                        self.cell_size, self.cell_size))
+                else:
+                    emoji = load_image(f'emoji{self.board[x][y]}.png')
+                    self.screen.blit(emoji, (x * self.cell_size + self.left, y * self.cell_size + self.top,
+                                             self.cell_size, self.cell_size))
+
+    def on_click(self, cell):
+        if cell == self.desired_emoji_coords:
+            return True
+        else:
+            return False
 
 def running():
     pygame.init()
     size = 650, 350
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption('Игра')
-    CatchingBalls(screen)
-    # SearchEmoji(screen)
+    if randrange(2):
+        CatchingBalls(screen)
+    else:
+        SearchEmoji(screen)
     pygame.display.flip()
     running = True
 
