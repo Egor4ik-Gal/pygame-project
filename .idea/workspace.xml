@@ -93,7 +93,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="Master" />
+                        <option value="merge-test" />
                       </list>
                     </value>
                   </entry>
