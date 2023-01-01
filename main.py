@@ -13,18 +13,18 @@ pr1 = pygame.image.load(r'data\pers1.png')
 pr2 = pygame.image.load(r'data\pers1.1.png')
 pr3 = pygame.image.load(r'data\pers1.2.png')
 pr4 = pygame.image.load(r'data\pers1.22.png')
+thing1 = pygame.image.load(r'data\cup.png')
 pr2.set_colorkey((255, 255, 255))
-all_sprites = pygame.sprite.Group()
-person = pygame.sprite.Sprite(all_sprites)
+all_sprites2 = pygame.sprite.Group()
+person = pygame.sprite.Sprite()
 person.image = pr1
 person.rect = person.image.get_rect()
 person.rect.x = 0
 person.rect.y = h - 205
 
 
-
-
 ##############################
+
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -37,6 +37,7 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     return image
+
 
 class Board:
     def __init__(self, screen):
@@ -93,7 +94,7 @@ class Ball(pygame.sprite.Sprite):
 
 class CatchingBalls:
     def __init__(self, screen):
-        global stop
+        global stop, all_sprites2, object2
         self.screen = screen
         pygame.draw.rect(screen, (255, 255, 255), (150, 0, 350, 350))
         pygame.draw.rect(screen, (200, 170, 100), (150, 400, 480, 80))
@@ -150,7 +151,7 @@ class CatchingBalls:
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
             pygame.quit()
-            stop = True
+            all_sprites2.remove(object2)
             running3()
 
         else:
@@ -164,7 +165,7 @@ class CatchingBalls:
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
             pygame.quit()
-            stop = True
+            all_sprites2.remove(object2)
             running3()
 
     def playing(self):
@@ -241,7 +242,7 @@ class CatchingBalls:
 
 class SearchEmoji(Board):
     def __init__(self, screen):
-        global stop
+        global stop, all_sprites2, object2
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
         self.n = randrange(1, 31)
@@ -256,9 +257,38 @@ class SearchEmoji(Board):
         screen.blit(text, (text_x, text_y))
         self.time = 19
         text2 = font.render(str(self.time), True, (0, 0, 0))
-        text2_x = 450
+        text2_x = 380
         text2_y = 10
         screen.blit(text2, (text2_x, text2_y))
+
+        self.all_sprites = pygame.sprite.Group()
+
+        self.hard1 = pygame.sprite.Sprite()
+        self.hard1.image = load_image("health.png")
+        self.hard1.rect = self.hard1.image.get_rect()
+        self.all_sprites.add(self.hard1)
+
+        self.hard1.rect.x = 465
+        self.hard1.rect.y = 6
+
+        self.hard2 = pygame.sprite.Sprite()
+        self.hard2.image = load_image("health.png")
+        self.hard2.rect = self.hard2.image.get_rect()
+        self.all_sprites.add(self.hard2)
+
+        self.hard2.rect.x = 435
+        self.hard2.rect.y = 6
+
+        self.hard3 = pygame.sprite.Sprite()
+        self.hard3.image = load_image("health.png")
+        self.hard3.rect = self.hard3.image.get_rect()
+        self.all_sprites.add(self.hard3)
+
+        self.hard3.rect.x = 405
+        self.hard3.rect.y = 6
+
+        self.all_sprites.draw(screen)
+
         if self.playing():
             font = pygame.font.Font(None, 40)
             text = font.render("Вы победили!!!", True, (100, 255, 100))
@@ -270,7 +300,7 @@ class SearchEmoji(Board):
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
             pygame.quit()
-            stop = True
+            all_sprites2.remove(object2)
             running3()
 
         else:
@@ -284,7 +314,7 @@ class SearchEmoji(Board):
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
             pygame.quit()
-            stop = True
+            all_sprites2.remove(object2)
             running3()
 
     def playing(self):
@@ -295,6 +325,7 @@ class SearchEmoji(Board):
         pygame.time.set_timer(TIMER, 1000)
 
         a = 'playing'
+        count_of_wrong_click = 0
 
         while running:
             for event in pygame.event.get():
@@ -303,13 +334,21 @@ class SearchEmoji(Board):
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.get_click(event.pos):
                         a = 'win'
+                    else:
+                        count_of_wrong_click += 1
+                        if count_of_wrong_click == 1:
+                            self.hard3.kill()
+                        if count_of_wrong_click == 2:
+                            self.hard2.kill()
+                        if count_of_wrong_click == 3:
+                            self.hard1.kill()
                 if event.type == TIMERUNOUT:
                     a = 'defeat'
                 if event.type == TIMER:
                     self.time -= 1
             if a == 'win':
                 return True
-            if a == 'defeat':
+            if a == 'defeat' or count_of_wrong_click >= 3:
                 return False
             pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
             self.screen.blit(self.desired_emoji, (250, 6))
@@ -319,10 +358,11 @@ class SearchEmoji(Board):
             text_y = 10
             self.screen.blit(text, (text_x, text_y))
             text2 = font.render(str(self.time), True, (0, 0, 0))
-            text2_x = 450
+            text2_x = 380
             text2_y = 10
             self.screen.blit(text2, (text2_x, text2_y))
             self.render(self.screen)
+            self.all_sprites.draw(self.screen)
             pygame.display.flip()
 
     def render(self, screen):
@@ -360,15 +400,197 @@ class SearchEmoji(Board):
         else:
             return False
 
+
+class SearchCouples(Board):
+    def __init__(self, screen):
+        global stop, all_sprites2, object2
+        self.screen = screen
+        pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
+        self.is_first = True
+        self.is_clicked = False
+        self.curr_n = None
+        self.curr_coords = None
+        super().__init__(screen)
+        font = pygame.font.Font(None, 30)
+        text = font.render("Найдите пары", True, (0, 0, 0))
+        text_x = 155
+        text_y = 10
+        screen.blit(text, (text_x, text_y))
+        self.time = 99
+        text2 = font.render(str(self.time), True, (0, 0, 0))
+        text2_x = 380
+        text2_y = 10
+        screen.blit(text2, (text2_x, text2_y))
+
+        self.all_sprites = pygame.sprite.Group()
+
+        self.hard1 = pygame.sprite.Sprite()
+        self.hard1.image = load_image("health.png")
+        self.hard1.rect = self.hard1.image.get_rect()
+        self.all_sprites.add(self.hard1)
+
+        self.hard1.rect.x = 465
+        self.hard1.rect.y = 6
+
+        self.hard2 = pygame.sprite.Sprite()
+        self.hard2.image = load_image("health.png")
+        self.hard2.rect = self.hard2.image.get_rect()
+        self.all_sprites.add(self.hard2)
+
+        self.hard2.rect.x = 435
+        self.hard2.rect.y = 6
+
+        self.hard3 = pygame.sprite.Sprite()
+        self.hard3.image = load_image("health.png")
+        self.hard3.rect = self.hard3.image.get_rect()
+        self.all_sprites.add(self.hard3)
+
+        self.hard3.rect.x = 405
+        self.hard3.rect.y = 6
+
+        self.all_sprites.draw(screen)
+
+        if self.playing():
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы победили!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+            all_sprites2.remove(object2)
+            running3()
+        else:
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы проиграли!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+            all_sprites2.remove(object2)
+            running3()
+
+    def playing(self):
+        running = True
+
+        TIMERUNOUT = pygame.USEREVENT + 1
+        pygame.time.set_timer(TIMERUNOUT, 100000)
+        TIMER = pygame.USEREVENT + 2
+        pygame.time.set_timer(TIMER, 1000)
+
+        self.count_of_wrong_click = 0
+
+        a = 'playing'
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.get_click(event.pos)
+                    check = True
+                    for y in range(self.height):
+                        for x in range(self.width):
+                            if self.board[x][y] != -1:
+                                check = False
+                                break
+                    if check:
+                        a = 'win'
+                if event.type == TIMERUNOUT:
+                    a = 'defeat'
+                if event.type == TIMER:
+                    self.time -= 1
+            if self.count_of_wrong_click == 1:
+                self.hard3.kill()
+            if self.count_of_wrong_click == 2:
+                self.hard2.kill()
+            if self.count_of_wrong_click == 3:
+                self.hard1.kill()
+            if a == 'win':
+                return True
+            if a == 'defeat' or self.count_of_wrong_click >= 3:
+                return False
+            pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
+            font = pygame.font.Font(None, 30)
+            text = font.render("Найдите пары", True, (0, 0, 0))
+            text_x = 155
+            text_y = 10
+            self.screen.blit(text, (text_x, text_y))
+            text2 = font.render(str(self.time), True, (0, 0, 0))
+            text2_x = 380
+            text2_y = 10
+            self.screen.blit(text2, (text2_x, text2_y))
+            self.render(self.screen)
+            self.all_sprites.draw(self.screen)
+            pygame.display.flip()
+
+    def render(self, screen):
+        if self.is_first:
+            self.is_first = False
+            for n in range(1, 26):
+                for _ in range(4):
+                    x, y = randrange(self.width), randrange(self.height)
+                    while self.board[x][y] != 0:
+                        x, y = randrange(self.width), randrange(self.height)
+                    self.board[x][y] = n
+                    emoji = load_image(f'emoji{n}.png')
+                    self.screen.blit(emoji, (x * self.cell_size + self.left, y * self.cell_size + self.top,
+                                             self.cell_size, self.cell_size))
+
+        if self.is_clicked:
+            pygame.draw.rect(screen, pygame.Color('white'), (
+                self.curr_coords[0] * self.cell_size + self.left, self.curr_coords[1] * self.cell_size + self.top,
+                self.cell_size, self.cell_size))
+
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board[x][y] == -1:
+                    continue
+                else:
+                    emoji = load_image(f'emoji{self.board[x][y]}.png')
+                    self.screen.blit(emoji, (x * self.cell_size + self.left, y * self.cell_size + self.top,
+                                             self.cell_size, self.cell_size))
+
+    def on_click(self, cell):
+        if self.board[cell[0]][cell[1]] == -1:
+            return
+        if self.is_clicked:
+            if cell == self.curr_coords:
+                self.is_clicked = False
+                self.curr_coords = None
+                self.curr_n = None
+            else:
+                if self.curr_n == self.board[cell[0]][cell[1]]:
+                    self.board[cell[0]][cell[1]] = -1
+                    self.board[self.curr_coords[0]][self.curr_coords[1]] = -1
+                    self.is_clicked = False
+                    self.curr_coords = None
+                    self.curr_n = None
+                else:
+                    self.count_of_wrong_click += 1
+        else:
+            self.is_clicked = True
+            self.curr_coords = cell
+            self.curr_n = self.board[cell[0]][cell[1]]
+
+
 def running():
     pygame.init()
     size = 650, 350
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption('Игра')
-    if randrange(2):
+    a = randrange(3)
+    if a == 0:
         CatchingBalls(screen)
-    else:
+    elif a == 1:
         SearchEmoji(screen)
+    elif a == 2:
+        SearchCouples(screen)
     pygame.display.flip()
     running = True
 
@@ -380,6 +602,24 @@ def running():
     pygame.quit()
 
 #########################################
+
+
+class Thing(pygame.sprite.Sprite):
+    def __init__(self):
+        super(Thing, self).__init__()
+        self.image = thing1
+        self.rect = self.image.get_rect()
+        self.rect.x = 226
+        self.rect.y = 116
+
+    def update(self, *args):
+        if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(args[0].pos) and 215 < person.rect.x < 340:
+            running()
+
+
+object2 = Thing()
+all_sprites2.add(object2)
+all_sprites2.add(person)
 
 
 def running3():
@@ -402,9 +642,8 @@ def running3():
                     if person.rect.x != 0:
                         person.rect.x -= speed
                     person.image = pers(flag, 'l')
-            if person.rect.x == 50 and stop is False:
-                running()
-            all_sprites.draw(screen3)
+            all_sprites2.draw(screen3)
+            all_sprites2.update(event)
             clock.tick(fps)
             pygame.display.flip()
     pygame.quit()
