@@ -4,11 +4,14 @@ from random import randrange
 
 stop = False
 flag = True
+flag_minigames = False
 size2 = w, h = 650, 350
+screen3 = pygame.display.set_mode(size2)
 clock = pygame.time.Clock()
 fps = 60
-speed = 10
+speed = 225
 bg = pygame.image.load(r'data\room1.png')
+bg2 = pygame.image.load(r'data\room2sav3.png')
 pr1 = pygame.image.load(r'data\pers1.png')
 pr2 = pygame.image.load(r'data\pers1.1.png')
 pr3 = pygame.image.load(r'data\pers1.2.png')
@@ -94,7 +97,7 @@ class Ball(pygame.sprite.Sprite):
 
 class CatchingBalls:
     def __init__(self, screen):
-        global stop, all_sprites2, object2
+        global stop, all_sprites2, object2, flag_minigames
         self.screen = screen
         pygame.draw.rect(screen, (255, 255, 255), (150, 0, 350, 350))
         pygame.draw.rect(screen, (200, 170, 100), (150, 400, 480, 80))
@@ -140,6 +143,7 @@ class CatchingBalls:
         self.all_sprites.draw(screen)
 
         # pygame.display.flip()
+        # self.playing()
         if self.playing():
             font = pygame.font.Font(None, 40)
             text = font.render("Вы победили!!!", True, (100, 255, 100))
@@ -150,7 +154,8 @@ class CatchingBalls:
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
-            pygame.quit()
+            # pygame.quit()
+            flag_minigames = True
             all_sprites2.remove(object2)
             running3()
 
@@ -164,8 +169,8 @@ class CatchingBalls:
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
-            pygame.quit()
-            all_sprites2.remove(object2)
+            # pygame.quit()
+            # all_sprites2.remove(object2)
             running3()
 
     def playing(self):
@@ -180,6 +185,7 @@ class CatchingBalls:
         count = 0
         list_of_balls = []
         while running:
+            self.screen.fill((0, 0, 0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -235,14 +241,20 @@ class CatchingBalls:
             self.all_sprites.draw(self.screen)
             pygame.display.flip()
             if count_of_fallen_balls >= 3:
+                # running = False
+                # running3()
                 return False
             if count_of_catched_balls == 30:
+                # running = False
+                # all_sprites2.remove(object2)
+                # running3()
                 return True
+        pygame.quit()
 
 
 class SearchEmoji(Board):
     def __init__(self, screen):
-        global stop, all_sprites2, object2
+        global stop, all_sprites2, object2, flag_minigames
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
         self.n = randrange(1, 31)
@@ -299,7 +311,8 @@ class SearchEmoji(Board):
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
-            pygame.quit()
+            # pygame.quit()
+            flag_minigames = True
             all_sprites2.remove(object2)
             running3()
 
@@ -313,9 +326,12 @@ class SearchEmoji(Board):
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
-            pygame.quit()
-            all_sprites2.remove(object2)
+            # start_ticks = pygame.time.get_ticks()  # пытался сделать таймер с надписью "Вы проиграли!"
+            # for event in pygame.event.get():
+            #     seconds = (pygame.time.get_ticks() - start_ticks) / 1000
+            #     if seconds > 10:
             running3()
+
 
     def playing(self):
         running = True
@@ -328,6 +344,7 @@ class SearchEmoji(Board):
         count_of_wrong_click = 0
 
         while running:
+            self.screen.fill((0, 0, 0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -364,6 +381,7 @@ class SearchEmoji(Board):
             self.render(self.screen)
             self.all_sprites.draw(self.screen)
             pygame.display.flip()
+        pygame.quit()
 
     def render(self, screen):
         for y in range(self.height):
@@ -403,7 +421,7 @@ class SearchEmoji(Board):
 
 class SearchCouples(Board):
     def __init__(self, screen):
-        global stop, all_sprites2, object2
+        global stop, all_sprites2, object2, flag_minigames
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
         self.is_first = True
@@ -460,6 +478,8 @@ class SearchCouples(Board):
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
+
+            flag_minigames = True
             all_sprites2.remove(object2)
             running3()
         else:
@@ -472,7 +492,7 @@ class SearchCouples(Board):
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
-            all_sprites2.remove(object2)
+            # all_sprites2.remove(object2)
             running3()
 
     def playing(self):
@@ -488,6 +508,7 @@ class SearchCouples(Board):
         a = 'playing'
 
         while running:
+            self.screen.fill((0, 0, 0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -528,6 +549,7 @@ class SearchCouples(Board):
             self.render(self.screen)
             self.all_sprites.draw(self.screen)
             pygame.display.flip()
+        pygame.quit()
 
     def render(self, screen):
         if self.is_first:
@@ -579,10 +601,10 @@ class SearchCouples(Board):
             self.curr_n = self.board[cell[0]][cell[1]]
 
 
-def running():
-    pygame.init()
-    size = 650, 350
-    screen = pygame.display.set_mode(size)
+def running(screen):
+    # pygame.init()
+    # size = 650, 350
+    # screen = pygame.display.set_mode(size)
     pygame.display.set_caption('Игра')
     a = randrange(3)
     if a == 0:
@@ -591,24 +613,24 @@ def running():
         SearchEmoji(screen)
     elif a == 2:
         SearchCouples(screen)
-    pygame.display.flip()
-    running = True
-
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-        screen.fill((255, 255, 255))
-    pygame.quit()
+    # pygame.display.flip()
+    # running = True
+    # while running:
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             running = False
+    # pygame.quit()
 
 
 #########################################
 
 
 class Thing(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, number):
         super(Thing, self).__init__()
-        self.image = thing1
+        self.number = number
+        if number == 1:
+            self.image = thing1
         self.rect = self.image.get_rect()
         self.rect.x = 226
         self.rect.y = 116
@@ -616,10 +638,10 @@ class Thing(pygame.sprite.Sprite):
     def update(self, *args):
         if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
                 args[0].pos) and 215 < person.rect.x < 340:
-            running()
+            running(screen3)
 
 
-object2 = Thing()
+object2 = Thing(1)
 all_sprites2.add(object2)
 all_sprites2.add(person)
 
@@ -627,12 +649,15 @@ all_sprites2.add(person)
 def running3():
     pygame.init()
     pygame.display.set_caption('room1')
-    screen3 = pygame.display.set_mode(size2)
     screen3.blit(pr1, (0, 0))
     running2 = True
+    room = 1
     while running2:
         for event in pygame.event.get():
-            screen3.blit(bg, (0, 0))
+            if room == 1:
+                screen3.blit(bg, (0, 0))
+            elif room == 2:
+                screen3.blit(bg2, (0, 0))
             if event.type == pygame.QUIT:
                 running2 = False
             if event.type == pygame.KEYDOWN:
@@ -644,6 +669,9 @@ def running3():
                     if person.rect.x != 0:
                         person.rect.x -= speed
                     person.image = pers(flag, 'l')
+                if flag_minigames and event.key == 101:
+                    room = 2
+                    person.rect.x = 0
             all_sprites2.draw(screen3)
             all_sprites2.update(event)
             clock.tick(fps)
