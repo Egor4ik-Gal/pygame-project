@@ -1,6 +1,6 @@
 import pygame
 import os
-from random import randrange
+from random import randrange, shuffle
 
 
 def load_image(name, colorkey=None):
@@ -534,19 +534,261 @@ class SearchCouples(Board):
             self.curr_coords = cell
             self.curr_n = self.board[cell[0]][cell[1]]
 
+class ConnectingWires:
+    def __init__(self, screen):
+        self.screen = screen
+        pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
+
+        self.colors = [pygame.Color("red"), pygame.Color("orange"), pygame.Color("green"),
+                       pygame.Color("blue"), pygame.Color("yellow"), pygame.Color("purple")]
+
+        shuffle(self.colors)
+
+
+        self.left_wires_coords = {
+            (150, 60, 60, 20): self.colors[0],
+            (150, 110, 60, 20): self.colors[1],
+            (150, 160, 60, 20): self.colors[2],
+            (150, 210, 60, 20): self.colors[3],
+            (150, 260, 60, 20): self.colors[4],
+            (150, 310, 60, 20): self.colors[5]
+        }
+
+        shuffle(self.colors)
+
+        self.right_wires_coords = {
+            (440, 60, 60, 20): self.colors[0],
+            (440, 110, 60, 20): self.colors[1],
+            (440, 160, 60, 20): self.colors[2],
+            (440, 210, 60, 20): self.colors[3],
+            (440, 260, 60, 20): self.colors[4],
+            (440, 310, 60, 20): self.colors[5]
+        }
+
+
+        font = pygame.font.Font(None, 30)
+        text = font.render("Найдите:", True, (0, 0, 0))
+        text_x = 155
+        text_y = 10
+        screen.blit(text, (text_x, text_y))
+        self.time = 19
+        text2 = font.render(str(self.time), True, (0, 0, 0))
+        text2_x = 380
+        text2_y = 10
+        screen.blit(text2, (text2_x, text2_y))
+
+        self.all_sprites = pygame.sprite.Group()
+
+        self.hard1 = pygame.sprite.Sprite()
+        self.hard1.image = load_image("health.png")
+        self.hard1.rect = self.hard1.image.get_rect()
+        self.all_sprites.add(self.hard1)
+
+        self.hard1.rect.x = 465
+        self.hard1.rect.y = 6
+
+        self.hard2 = pygame.sprite.Sprite()
+        self.hard2.image = load_image("health.png")
+        self.hard2.rect = self.hard2.image.get_rect()
+        self.all_sprites.add(self.hard2)
+
+        self.hard2.rect.x = 435
+        self.hard2.rect.y = 6
+
+        self.hard3 = pygame.sprite.Sprite()
+        self.hard3.image = load_image("health.png")
+        self.hard3.rect = self.hard3.image.get_rect()
+        self.all_sprites.add(self.hard3)
+
+        self.hard3.rect.x = 405
+        self.hard3.rect.y = 6
+
+        self.all_sprites.draw(screen)
+
+        if self.playing():
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы победили!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+        else:
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы проиграли!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+
+    def get_color(self, pos):
+        x, y = pos
+        if y in range(60, 81):
+            if x in range(150,210):
+                return self.left_wires_coords[(150, 60, 60, 20)]
+            elif x in range(440, 500):
+                return self.right_wires_coords[(440, 60, 60, 20)]
+        elif y in range(110, 131):
+            if x in range(150, 210):
+                return self.left_wires_coords[(150, 110, 60, 20)]
+            elif x in range(440, 500):
+                return self.right_wires_coords[(440, 110, 60, 20)]
+        elif y in range(160, 181):
+            if x in range(150, 210):
+                return self.left_wires_coords[(150, 160, 60, 20)]
+            elif x in range(440, 500):
+                return self.right_wires_coords[(440, 160, 60, 20)]
+        elif y in range(210, 231):
+            if x in range(150, 210):
+                return self.left_wires_coords[(150, 210, 60, 20)]
+            elif x in range(440, 500):
+                return self.right_wires_coords[(440, 210, 60, 20)]
+        elif y in range(260, 281):
+            if x in range(150, 210):
+                return self.left_wires_coords[(150, 260, 60, 20)]
+            elif x in range(440, 500):
+                return self.right_wires_coords[(440, 260, 60, 20)]
+        elif y in range(310, 331):
+            if x in range(150, 210):
+                return self.left_wires_coords[(150, 310, 60, 20)]
+            elif x in range(440, 500):
+                return self.right_wires_coords[(440, 310, 60, 20)]
+        return False
+
+    def get_coords(self, pos):
+        x, y = pos
+        if y in range(60, 81):
+            if x in range(150,210):
+                return (150, 60, 60, 20)
+            elif x in range(440, 500):
+                return (440, 60, 60, 20)
+        elif y in range(110, 131):
+            if x in range(150, 210):
+                return (150, 110, 60, 20)
+            elif x in range(440, 500):
+                return (440, 110, 60, 20)
+        elif y in range(160, 181):
+            if x in range(150, 210):
+                return (150, 160, 60, 20)
+            elif x in range(440, 500):
+                return (440, 160, 60, 20)
+        elif y in range(210, 231):
+            if x in range(150, 210):
+                return (150, 210, 60, 20)
+            elif x in range(440, 500):
+                return (440, 210, 60, 20)
+        elif y in range(260, 281):
+            if x in range(150, 210):
+                return (150, 260, 60, 20)
+            elif x in range(440, 500):
+                return (440, 260, 60, 20)
+        elif y in range(310, 331):
+            if x in range(150, 210):
+                return (150, 310, 60, 20)
+            elif x in range(440, 500):
+                return (440, 310, 60, 20)
+        return False
+
+    def playing(self):
+        running = True
+
+        TIMERUNOUT = pygame.USEREVENT + 1
+        pygame.time.set_timer(TIMERUNOUT, 20000)
+        TIMER = pygame.USEREVENT + 2
+        pygame.time.set_timer(TIMER, 1000)
+
+        a = 'playing'
+        click = False
+        color = None
+        count_of_wrong_click = 0
+        count_of_connected_wires = 0
+        starts_and_ends = []
+
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if click:
+                        if self.get_color(event.pos) == color:
+                            click = False
+                            if coords_for_rect == self.get_coords(event.pos):
+                                pass
+                            else:
+                                count_of_connected_wires += 1
+                                if coords_for_rect[0] < self.get_coords(event.pos)[0]:
+                                    b = ((210, coords_for_rect[1] + 10), (440, self.get_coords(event.pos)[1] + 10),
+                                         self.get_color(event.pos))
+                                    starts_and_ends.append(b)
+                                else:
+                                    b = ((210, self.get_coords(event.pos)[1] + 10), (440, coords_for_rect[1] + 10),
+                                         self.get_color(event.pos))
+                                    starts_and_ends.append(b)
+                        else:
+                            count_of_wrong_click += 1
+                            if count_of_wrong_click == 1:
+                                self.hard3.kill()
+                            if count_of_wrong_click == 2:
+                                self.hard2.kill()
+                            if count_of_wrong_click == 3:
+                                self.hard1.kill()
+                    else:
+                        click = True
+                        coords_for_rect = self.get_coords(event.pos)
+                        color = self.get_color(event.pos)
+                if event.type == TIMERUNOUT:
+                    a = 'defeat'
+                if event.type == TIMER:
+                    self.time -= 1
+            pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
+            for coords in self.left_wires_coords.keys():
+                pygame.draw.rect(self.screen, self.left_wires_coords[coords], coords)
+            for coords in self.right_wires_coords.keys():
+                pygame.draw.rect(self.screen, self.right_wires_coords[coords], coords)
+            if click:
+                pygame.draw.rect(self.screen, pygame.Color('white'), coords_for_rect, 2)
+            for elem in starts_and_ends:
+                pygame.draw.line(self.screen, elem[2], elem[0], elem[1], width=20)
+            font = pygame.font.Font(None, 30)
+            text = font.render("Соедините", True, (0, 0, 0))
+            text_x = 155
+            text_y = 8
+            self.screen.blit(text, (text_x, text_y))
+            text1 = font.render("соответствующие цвета", True, (0, 0, 0))
+            text_x1 = 155
+            text_y1 = 30
+            self.screen.blit(text1, (text_x1, text_y1))
+            text2 = font.render(str(self.time), True, (0, 0, 0))
+            text2_x = 470
+            text2_y = 32
+            self.screen.blit(text2, (text2_x, text2_y))
+            self.all_sprites.draw(self.screen)
+            if count_of_connected_wires == 6:
+                return True
+            if a == 'defeat' or count_of_wrong_click >= 3:
+                return False
+            pygame.display.flip()
 
 def running():
     pygame.init()
     size = 650, 350
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption('Игра')
-    a = randrange(3)
+    a = randrange(4)
+    a = 2
     if a == 0:
         CatchingBalls(screen)
     elif a == 1:
         SearchEmoji(screen)
     elif a == 2:
         SearchCouples(screen)
+    elif a == 3:
+        ConnectingWires(screen)
     pygame.display.flip()
     running = True
 
