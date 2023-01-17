@@ -711,7 +711,7 @@ def running3():
                     if person.rect.x + 78 + speed <= w:
                         person.rect.x += speed
                     else:
-                        person.rect.x = 650
+                        person.rect.x = 650 - 78
                     person.image = pers(flag, 'r')
                 if event.key == 97 or event.key == 1073741904:
                     if person.rect.x - speed >= 1:
