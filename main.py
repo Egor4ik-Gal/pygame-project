@@ -6,6 +6,7 @@ flag = True
 flag_minigames1 = False
 flag_minigames2 = False
 flag_minigames3 = False
+flag_minigames2_2 = False
 size2 = w, h = 650, 350
 screen = pygame.display.set_mode(size2)
 clock = pygame.time.Clock()
@@ -20,6 +21,7 @@ pr3 = pygame.image.load(r'data\pers1.2.png')
 pr4 = pygame.image.load(r'data\pers1.22.png')
 thing1 = pygame.image.load(r'data\cup.png')
 thing2 = pygame.image.load(r'data\TV.png')
+thing2_2 = pygame.image.load(r'data\vali.png')
 thing3 = pygame.image.load(r'data\micro.png')
 pr2.set_colorkey((255, 255, 255))
 
@@ -100,8 +102,8 @@ class Ball(pygame.sprite.Sprite):
 
 
 class CatchingBalls:
-    def __init__(self, screen):
-        global flag_minigames1, flag_minigames2, flag_minigames3, room
+    def __init__(self, screen, v=None):
+        global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
         self.screen = screen
         pygame.draw.rect(screen, (255, 255, 255), (150, 0, 350, 350))
         pygame.draw.rect(screen, (200, 170, 100), (150, 400, 480, 80))
@@ -160,8 +162,10 @@ class CatchingBalls:
             screen.blit(text, (text_x, text_y))
             if room == 1:
                 flag_minigames1 = True
-            elif room == 2:
+            elif room == 2 and v == 0:
                 flag_minigames2 = True
+            elif room == 2 and v == 1:
+                flag_minigames2_2 = True
             elif room == 3:
                 flag_minigames3 = True
             running3()
@@ -258,8 +262,8 @@ class CatchingBalls:
 
 
 class SearchEmoji(Board):
-    def __init__(self, screen):
-        global flag_minigames1, flag_minigames2, flag_minigames3, room
+    def __init__(self, screen, v=None):
+        global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
         self.n = randrange(1, 31)
@@ -318,8 +322,10 @@ class SearchEmoji(Board):
             screen.blit(text, (text_x, text_y))
             if room == 1:
                 flag_minigames1 = True
-            elif room == 2:
+            elif room == 2 and v == 0:
                 flag_minigames2 = True
+            elif room == 2 and v == 1:
+                flag_minigames2_2 = True
             elif room == 3:
                 flag_minigames3 = True
             running3()
@@ -428,8 +434,8 @@ class SearchEmoji(Board):
 
 
 class SearchCouples(Board):
-    def __init__(self, screen):
-        global flag_minigames1, flag_minigames2, flag_minigames3, room
+    def __init__(self, screen, v=None):
+        global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
         self.is_first = True
@@ -489,8 +495,10 @@ class SearchCouples(Board):
 
             if room == 1:
                 flag_minigames1 = True
-            elif room == 2:
+            elif room == 2 and v == 0:
                 flag_minigames2 = True
+            elif room == 2 and v == 1:
+                flag_minigames2_2 = True
             elif room == 3:
                 flag_minigames3 = True
             running3()
@@ -613,8 +621,8 @@ class SearchCouples(Board):
 
 
 class ConnectingWires:
-    def __init__(self, screen):
-        global flag_minigames1, flag_minigames2, flag_minigames3, room
+    def __init__(self, screen, v=None):
+        global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
 
@@ -696,8 +704,10 @@ class ConnectingWires:
             screen.blit(text, (text_x, text_y))
             if room == 1:
                 flag_minigames1 = True
-            elif room == 2:
+            elif room == 2 and v == 0:
                 flag_minigames2 = True
+            elif room == 2 and v == 1:
+                flag_minigames2_2 = True
             elif room == 3:
                 flag_minigames3 = True
             running3()
@@ -864,21 +874,22 @@ class ConnectingWires:
         pygame.quit()
 
 
-def running(screen):
-    # pygame.init()
-    # size = 650, 350
-    # screen = pygame.display.set_mode(size)
+minigames = [0, 1, 2, 3]
+
+
+def running(screen, v=None):
+    global minigames
     pygame.display.set_caption('Игра')
-    a = randrange(4)
-    a = 3  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    a = minigames.pop()
+    # a = 1  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if a == 0:
-        CatchingBalls(screen)
+        CatchingBalls(screen, v)
     elif a == 1:
-        SearchEmoji(screen)
+        SearchEmoji(screen, v)
     elif a == 2:
-        SearchCouples(screen)
+        SearchCouples(screen, v)
     elif a == 3:
-        ConnectingWires(screen)
+        ConnectingWires(screen, v)
 
 #########################################
 
@@ -902,22 +913,40 @@ class Thing(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.rect.x = 316
             self.rect.y = 165
+        elif number == 4:
+            self.image = thing2_2
+            self.rect = self.image.get_rect()
+            self.rect.x = 467
+            self.rect.y = 232
 
 
     def update(self, *args):
-        if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
-                args[0].pos) and 215 < person.rect.x < 340:
-            running(screen)
-
+        if self.number == 2:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
+                    args[0].pos) and 215 < person.rect.x < 340 and room == 2:
+                running(screen, 0)
+        elif self.number == 4:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
+                    args[0].pos) and 430 < person.rect.x < 500 and room == 2:
+                running(screen, 1)
+        elif self.number == 1:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
+                    args[0].pos) and 215 < person.rect.x < 300 and room == 1:
+                running(screen)
+        elif self.number == 3:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
+                    args[0].pos) and 300 < person.rect.x < 350 and room == 3:
+                running(screen)
 
 cup = Thing(1)
 tv = Thing(2)
 micro = Thing(3)
+valli = Thing(4)
 all_sprites_room1 = pygame.sprite.Group()
 all_sprites_room2 = pygame.sprite.Group()
 all_sprites_room3 = pygame.sprite.Group()
 all_sprites_room1.add(cup, person)
-all_sprites_room2.add(tv, person)
+all_sprites_room2.add(tv, valli, person)
 all_sprites_room3.add(micro, person)
 room = 1
 
@@ -941,6 +970,8 @@ def running3():
                 screen.blit(bg2, (0, 0))
                 if flag_minigames2 is True:
                     all_sprites_room2.remove(tv)
+                if flag_minigames2_2 is True:
+                    all_sprites_room2.remove(valli)
                 all_sprites_room2.draw(screen)
                 all_sprites_room2.update(event)
             elif room == 3:
@@ -971,7 +1002,7 @@ def running3():
                 elif room == 2 and event.key == 101 and person.rect.x <= 115:
                     room = 1
                     person.rect.x = 515
-                elif flag_minigames2 and event.key == 101 and person.rect.x >= 515:
+                elif flag_minigames2 and event.key == 101 and person.rect.x >= 515 and flag_minigames2_2:
                     room = 3
                     person.rect.x = 0
                 elif room == 3 and event.key == 101 and person.rect.x <= 115:
