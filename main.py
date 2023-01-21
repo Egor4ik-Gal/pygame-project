@@ -12,6 +12,8 @@ screen = pygame.display.set_mode(size2)
 clock = pygame.time.Clock()
 fps = 60
 speed = 113
+bg0 = pygame.image.load(r'data\first_screen.png')
+bg0_1 = pygame.image.load(r'data\authors.png')
 bg = pygame.image.load(r'data\room1.png')
 bg2 = pygame.image.load(r'data\room2sav3.png')
 bg3 = pygame.image.load(r'data\room3sav3.png')
@@ -19,6 +21,9 @@ pr1 = pygame.image.load(r'data\pers1.png')
 pr2 = pygame.image.load(r'data\pers1.1.png')
 pr3 = pygame.image.load(r'data\pers1.2.png')
 pr4 = pygame.image.load(r'data\pers1.22.png')
+bg0_butt1 = pygame.image.load(r'data\firstbutt.png')
+bg0_butt2 = pygame.image.load(r'data\secondbutt.png')
+bg0_butt3 = pygame.image.load(r'data\back.png')
 thing1 = pygame.image.load(r'data\cup.png')
 thing2 = pygame.image.load(r'data\TV.png')
 thing2_2 = pygame.image.load(r'data\vali.png')
@@ -183,7 +188,6 @@ class CatchingBalls:
             running3()
 
     def playing(self):
-        clock = pygame.time.Clock()
         running = True
 
         CREATINGBALLS = pygame.USEREVENT + 1
@@ -248,15 +252,12 @@ class CatchingBalls:
             text2_y = 35
             self.screen.blit(text2, (text2_x, text2_y))
             self.all_sprites.draw(self.screen)
+            # clock.tick(fps)
             pygame.display.flip()
+
             if count_of_fallen_balls >= 3:
-                # running = False
-                # running3()
                 return False
             if count_of_catched_balls == 30:
-                # running = False
-                # all_sprites2.remove(object2)
-                # running3()
                 return True
         pygame.quit()
 
@@ -881,7 +882,7 @@ def running(screen, v=None):
     global minigames
     pygame.display.set_caption('Игра')
     a = minigames.pop()
-    # a = 1  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # a = 0  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if a == 0:
         CatchingBalls(screen, v)
     elif a == 1:
@@ -918,36 +919,73 @@ class Thing(pygame.sprite.Sprite):
             self.rect = self.image.get_rect()
             self.rect.x = 467
             self.rect.y = 232
+        elif number == 5:
+            self.image = bg0_butt1
+            self.rect = self.image.get_rect()
+            self.rect.x = 421
+            self.rect.y = 135
+        elif number == 6:
+            self.image = bg0_butt2
+            self.rect = self.image.get_rect()
+            self.rect.x = 421
+            self.rect.y = 177
+        elif number == 7:
+            self.image = bg0_butt3
+            self.rect = self.image.get_rect()
+            self.rect.x = 0
+            self.rect.y = 0
 
 
     def update(self, *args):
-        if self.number == 2:
-            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
-                    args[0].pos) and 215 < person.rect.x < 340 and room == 2:
-                running(screen, 0)
-        elif self.number == 4:
-            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
-                    args[0].pos) and 430 < person.rect.x < 500 and room == 2:
-                running(screen, 1)
-        elif self.number == 1:
+        if self.number == 1:
             if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
                     args[0].pos) and 215 < person.rect.x < 300 and room == 1:
                 running(screen)
+        elif self.number == 2:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
+                    args[0].pos) and 215 < person.rect.x < 340 and room == 2:
+                running(screen, 0)
         elif self.number == 3:
             if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
                     args[0].pos) and 300 < person.rect.x < 350 and room == 3:
                 running(screen)
+        elif self.number == 4:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
+                    args[0].pos) and 430 < person.rect.x < 500 and room == 2:
+                running(screen, 1)
+        elif self.number == 5:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
+                    args[0].pos):
+                running3()
+        elif self.number == 6:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
+                    args[0].pos):
+                running5()
+        elif self.number == 7:
+            if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
+                    args[0].pos):
+                running4()
+
+
 
 cup = Thing(1)
 tv = Thing(2)
 micro = Thing(3)
 valli = Thing(4)
+butt1 = Thing(5)
+butt2 = Thing(6)
+butt3 = Thing(7)
 all_sprites_room1 = pygame.sprite.Group()
 all_sprites_room2 = pygame.sprite.Group()
 all_sprites_room3 = pygame.sprite.Group()
+all_sprites_screen1 = pygame.sprite.Group()
+all_sprites_screen2 = pygame.sprite.Group()
 all_sprites_room1.add(cup, person)
 all_sprites_room2.add(tv, valli, person)
 all_sprites_room3.add(micro, person)
+all_sprites_screen1.add(butt1, butt2)
+all_sprites_screen2.add(butt3)
+
 room = 1
 
 
@@ -958,6 +996,8 @@ def running3():
     running2 = True
     while running2:
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running2 = False
             if room == 1:
                 pygame.display.set_caption('room1')
                 screen.blit(bg, (0, 0))
@@ -981,8 +1021,6 @@ def running3():
                     all_sprites_room3.remove(micro)
                 all_sprites_room3.draw(screen)
                 all_sprites_room3.update(event)
-            if event.type == pygame.QUIT:
-                running2 = False
             if event.type == pygame.KEYDOWN:
                 if event.key == 100 or event.key == 1073741903:
                     if person.rect.x + 78 + speed <= w:
@@ -1013,6 +1051,60 @@ def running3():
     pygame.quit()
 
 
+def running2():
+    pygame.init()
+    screen.blit(bg0, (0, 0))
+    pygame_icon = pygame.image.load(r'data\ava.png')
+    pygame.display.set_icon(pygame_icon)
+    pygame.display.set_caption('Лобби')
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            clock.tick(fps)
+            pygame.display.flip()
+            all_sprites_screen1.draw(screen)
+            all_sprites_screen1.update(event)
+    pygame.quit()
+
+
+def running4():
+    pygame.init()
+    screen.blit(bg0, (0, 0))
+    pygame_icon = pygame.image.load(r'data\ava.png')
+    pygame.display.set_icon(pygame_icon)
+    pygame.display.set_caption('Лобби')
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                running3()
+            all_sprites_screen1.draw(screen)
+            all_sprites_screen1.update(event)
+            pygame.display.flip()
+    pygame.quit()
+
+
+def running5():
+    pygame.init()
+    screen.blit(bg0_1, (0, 0))
+    pygame_icon = pygame.image.load(r'data\ava.png')
+    pygame.display.set_icon(pygame_icon)
+    pygame.display.set_caption('Лобби')
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            all_sprites_screen2.draw(screen)
+            all_sprites_screen2.update(event)
+            pygame.display.flip()
+    pygame.quit()
+
+
 def pers(flag1, rotate):
     global flag
     if flag1 is True:
@@ -1032,4 +1124,4 @@ def pers(flag1, rotate):
 
 
 if __name__ == '__main__':
-    running3()
+    running2()
