@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d82ef4c6-b73e-4d71-bbe6-1e531c2576a9" name="Changes" comment="add bew mini">
+    <list default="true" id="d82ef4c6-b73e-4d71-bbe6-1e531c2576a9" name="Changes" comment="add new mini-game Summas">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -116,7 +116,14 @@
       <option name="project" value="LOCAL" />
       <updated>1672237290194</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="add new mini-game Summas">
+      <created>1674379173256</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1674379173256</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -148,6 +155,7 @@
     <MESSAGE value="start of creation mini-game Search Emoji" />
     <MESSAGE value="emoji photos" />
     <MESSAGE value="add mini-game Search emoji" />
-    <option name="LAST_COMMIT_MESSAGE" value="add mini-game Search emoji" />
+    <MESSAGE value="add new mini-game Summas" />
+    <option name="LAST_COMMIT_MESSAGE" value="add new mini-game Summas" />
   </component>
 </project>
