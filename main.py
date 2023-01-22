@@ -1,6 +1,6 @@
 import pygame
 import os
-from random import randrange, shuffle
+from random import randrange, shuffle, choice
 
 
 def load_image(name, colorkey=None):
@@ -774,15 +774,217 @@ class ConnectingWires:
                 return False
             pygame.display.flip()
 
+
+class Summas(Board):
+    def __init__(self, screen):
+        global flag_minigames1, flag_minigames2, flag_minigames3, room
+        self.screen = screen
+        pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
+        self.is_first = True
+        self.is_clicked = False
+        self.curr_n = None
+        self.curr_coords = None
+        super().__init__(screen)
+        font = pygame.font.Font(None, 20)
+        text = font.render("Найдите пары чисел,", True, (0, 0, 0))
+        text_x = 155
+        text_y = 6
+        screen.blit(text, (text_x, text_y))
+        text1 = font.render("где сума равна 101", True, (0, 0, 0))
+        text_x1 = 155
+        text_y1 = 10
+        screen.blit(text1, (text_x1, text_y1))
+        self.time = 499
+        text2 = font.render(str(self.time), True, (0, 0, 0))
+        text2_x = 380
+        text2_y = 10
+        screen.blit(text2, (text2_x, text2_y))
+
+        self.all_sprites = pygame.sprite.Group()
+
+        self.hard1 = pygame.sprite.Sprite()
+        self.hard1.image = load_image("health.png")
+        self.hard1.rect = self.hard1.image.get_rect()
+        self.all_sprites.add(self.hard1)
+
+        self.hard1.rect.x = 465
+        self.hard1.rect.y = 6
+
+        self.hard2 = pygame.sprite.Sprite()
+        self.hard2.image = load_image("health.png")
+        self.hard2.rect = self.hard2.image.get_rect()
+        self.all_sprites.add(self.hard2)
+
+        self.hard2.rect.x = 435
+        self.hard2.rect.y = 6
+
+        self.hard3 = pygame.sprite.Sprite()
+        self.hard3.image = load_image("health.png")
+        self.hard3.rect = self.hard3.image.get_rect()
+        self.all_sprites.add(self.hard3)
+
+        self.hard3.rect.x = 405
+        self.hard3.rect.y = 6
+
+        self.all_sprites.draw(screen)
+
+        if self.playing():
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы победили!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+
+        else:
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы проиграли!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+
+    def playing(self):
+        running = True
+
+        TIMERUNOUT = pygame.USEREVENT + 1
+        pygame.time.set_timer(TIMERUNOUT, 500000)
+        TIMER = pygame.USEREVENT + 2
+        pygame.time.set_timer(TIMER, 1000)
+
+        self.count_of_wrong_click = 0
+
+        a = 'playing'
+
+        while running:
+            self.screen.fill((0, 0, 0))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.get_click(event.pos)
+                    check = True
+                    for y in range(self.height):
+                        for x in range(self.width):
+                            if self.board[x][y] != -1:
+                                check = False
+                                break
+                    if check:
+                        a = 'win'
+                if event.type == TIMERUNOUT:
+                    a = 'defeat'
+                if event.type == TIMER:
+                    self.time -= 1
+            if self.count_of_wrong_click == 1:
+                self.hard3.kill()
+            if self.count_of_wrong_click == 2:
+                self.hard2.kill()
+            if self.count_of_wrong_click == 3:
+                self.hard1.kill()
+            if a == 'win':
+                return True
+            if a == 'defeat' or self.count_of_wrong_click >= 3:
+                return False
+            pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
+            font = pygame.font.Font(None, 25)
+            text = font.render("Найдите пары чисел,", True, (0, 0, 0))
+            text_x = 155
+            text_y = 6
+            self.screen.blit(text, (text_x, text_y))
+            text1 = font.render("где сума равна 101", True, (0, 0, 0))
+            text_x1 = 155
+            text_y1 = 21
+            self.screen.blit(text1, (text_x1, text_y1))
+            text2 = font.render(str(self.time), True, (0, 0, 0))
+            text2_x = 380
+            text2_y = 10
+            self.screen.blit(text2, (text2_x, text2_y))
+            self.render(self.screen)
+            self.all_sprites.draw(self.screen)
+            pygame.display.flip()
+        pygame.quit()
+
+    def render(self, screen):
+        if self.is_first:
+            self.is_first = False
+            numbers = list(range(1, 101))
+            for y in range(self.height):
+                for x in range(self.width):
+                    n = numbers.index(choice(numbers))
+                    self.board[x][y] = numbers.pop(n)
+            # for n in range(1, 26):
+            #     for _ in range(4):
+            #         x, y = randrange(self.width), randrange(self.height)
+            #         while self.board[x][y] != 0:
+            #             x, y = randrange(self.width), randrange(self.height)
+            #         self.board[x][y] = n
+            #         emoji = load_image(f'emoji{n}.png')
+            #         self.screen.blit(emoji, (x * self.cell_size + self.left, y * self.cell_size + self.top,
+            #                                  self.cell_size, self.cell_size))
+
+        if self.is_clicked:
+            pygame.draw.rect(screen, pygame.Color('white'), (
+                self.curr_coords[0] * self.cell_size + self.left, self.curr_coords[1] * self.cell_size + self.top,
+                self.cell_size, self.cell_size))
+
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board[x][y] == -1:
+                    continue
+                else:
+                    # self.screen.blit(self.board[x][y], (x * self.cell_size + self.left, y * self.cell_size + self.top,
+                    #                          self.cell_size, self.cell_size))
+                    pygame.draw.rect(screen, pygame.Color("white"), (
+                        x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
+                        self.cell_size), 1)
+                    font = pygame.font.Font(None, 25)
+                    text = font.render(str(self.board[x][y]), True, (0, 0, 0))
+                    if self.board[x][y] == 100:
+                        text_x = x * self.cell_size + self.left + 1
+                    elif self.board[x][y] < 10:
+                        text_x = x * self.cell_size + self.left + 12
+                    else:
+                        text_x = x * self.cell_size + self.left + 6
+                    text_y = y * self.cell_size + self.top + 6
+                    self.screen.blit(text, (text_x, text_y))
+
+    def on_click(self, cell):
+        if self.board[cell[0]][cell[1]] == -1:
+            return
+        if self.is_clicked:
+            if cell == self.curr_coords:
+                self.is_clicked = False
+                self.curr_coords = None
+                self.curr_n = None
+            else:
+                if self.curr_n + self.board[cell[0]][cell[1]] == 101:
+                    self.board[cell[0]][cell[1]] = -1
+                    self.board[self.curr_coords[0]][self.curr_coords[1]] = -1
+                    self.is_clicked = False
+                    self.curr_coords = None
+                    self.curr_n = None
+                else:
+                    self.count_of_wrong_click += 1
+        else:
+            self.is_clicked = True
+            self.curr_coords = cell
+            self.curr_n = self.board[cell[0]][cell[1]]
+
+
 def running():
     pygame.init()
     size = 650, 350
     screen = pygame.display.set_mode(size)
     pygame.display.set_caption('Игра')
     a = randrange(4)
-    a = 2
     if a == 0:
-        CatchingBalls(screen)
+        Summas(screen)
     elif a == 1:
         SearchEmoji(screen)
     elif a == 2:
