@@ -36,7 +36,6 @@ person.rect = person.image.get_rect()
 person.rect.x = 0
 person.rect.y = h - 205
 
-
 ##############################
 
 
@@ -1005,6 +1004,15 @@ def running3():
                     all_sprites_room1.remove(cup)
                 all_sprites_room1.draw(screen)
                 all_sprites_room1.update(event)
+                stroka = 'Я проснулся от звука будильника. Как обычно хочется спать. В комнате как-то холодно.' \
+                         ' Вот бы обратно под одеяло лечь. Мне снился странный сон. ' \
+                         'Там я потерял свой кубок и спрашивал у всех людей на улице, не видели ли они его.' \
+                         ' Кстати где кубок сейчас?'
+                font = pygame.font.Font(None, 15)
+                text = font.render(stroka, True, (0, 0, 0))
+                text_x = 155
+                text_y = 10
+                screen.blit(text, (text_x, text_y))
             elif room == 2:
                 pygame.display.set_caption('room2')
                 screen.blit(bg2, (0, 0))
@@ -1068,6 +1076,31 @@ def running3():
             screen.blit(bg3, (0, 0))
             all_sprites_room3.draw(screen)
         clock.tick(fps // 4)
+
+        pygame.draw.rect(screen, (255, 255, 255), (20, 200, 100, 75))
+
+        if room == 1:
+            pygame.display.flip()
+            stroka = 'Я проснулся от звука будильника. Как обычно хочется спать. В комнате как-то холодно.' \
+                     ' Вот бы обратно под одеяло лечь. Мне снился странный сон. ' \
+                     'Там я потерял свой кубок и спрашивал у всех людей на улице, не видели ли они его.' \
+                     ' Кстати где кубок сейчас?'
+            font = pygame.font.Font(None, 15)
+            text = font.render(stroka, True, (0, 0, 0))
+            text_x = 155
+            text_y = 10
+            screen.blit(text, (text_x, text_y))
+            if flag_minigames1 is True:
+                pass
+        elif room == 2:
+            if flag_minigames2 is True:
+                pass
+            if flag_minigames2_2 is True:
+                pass
+        elif room == 3:
+            if flag_minigames3 is True:
+                pass
+
         pygame.display.flip()
     pygame.quit()
 
