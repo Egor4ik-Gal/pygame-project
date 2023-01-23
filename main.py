@@ -648,6 +648,21 @@ def running3():
             all_sprites2.update(event)
             clock.tick(fps)
             pygame.display.flip()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_d]:
+            if person.rect.x != 0:
+                person.rect.x -= speed
+                pygame.display.flip()
+            person.image = pers(flag, 'l')
+        if keys[pygame.K_RIGHT] or keys[pygame.K_a]:
+            if person.rect.x + 78 <= w:
+                person.rect.x += speed
+            person.image = pers(flag, 'r')
+        screen3.blit(bg, (0, 0))
+        all_sprites2.draw(screen3)
+        all_sprites2.update(event)
+        clock.tick(fps // 4)
+        pygame.display.flip()
     pygame.quit()
 
 
