@@ -755,7 +755,7 @@ class ConnectingWires:
     def get_coords(self, pos):
         x, y = pos
         if y in range(60, 81):
-            if x in range(150,  210):
+            if x in range(150, 210):
                 return (150, 60, 60, 20)
             elif x in range(440, 500):
                 return (440, 60, 60, 20)
@@ -802,42 +802,43 @@ class ConnectingWires:
         starts_and_ends = []
 
         while running:
+            screen.fill((0, 0, 0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if click:
-                        if self.get_color(event.pos) == color:
-                            click = False
-                            if coords_for_rect == self.get_coords(event.pos):
-                                pass
-                            else:
-                                count_of_connected_wires += 1
-                                if coords_for_rect[0] < self.get_coords(event.pos)[0]:
-                                    b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
-                                         self.get_color(event.pos))
-                                    starts_and_ends.append(b)
+                    if self.get_coords(event.pos):
+                        if click:
+                            if self.get_color(event.pos) == color:
+                                click = False
+                                if coords_for_rect == self.get_coords(event.pos):
+                                    pass
                                 else:
-                                    b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
-                                         self.get_color(event.pos))
-                                    starts_and_ends.append(b)
+                                    count_of_connected_wires += 1
+                                    if coords_for_rect[0] < self.get_coords(event.pos)[0]:
+                                        b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
+                                             self.get_color(event.pos))
+                                        starts_and_ends.append(b)
+                                    else:
+                                        b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
+                                             self.get_color(event.pos))
+                                        starts_and_ends.append(b)
+                            else:
+                                count_of_wrong_click += 1
+                                if count_of_wrong_click == 1:
+                                    self.hard3.kill()
+                                if count_of_wrong_click == 2:
+                                    self.hard2.kill()
+                                if count_of_wrong_click == 3:
+                                    self.hard1.kill()
                         else:
-                            count_of_wrong_click += 1
-                            if count_of_wrong_click == 1:
-                                self.hard3.kill()
-                            if count_of_wrong_click == 2:
-                                self.hard2.kill()
-                            if count_of_wrong_click == 3:
-                                self.hard1.kill()
-                    else:
-                        click = True
-                        coords_for_rect = self.get_coords(event.pos)
-                        color = self.get_color(event.pos)
+                            click = True
+                            coords_for_rect = self.get_coords(event.pos)
+                            color = self.get_color(event.pos)
                 if event.type == TIMERUNOUT:
                     a = 'defeat'
                 if event.type == TIMER:
                     self.time -= 1
-            self.screen.fill((0, 0, 0))
             pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
             for coords in self.left_wires_coords.keys():
                 pygame.draw.rect(self.screen, self.left_wires_coords[coords], coords)
@@ -846,7 +847,14 @@ class ConnectingWires:
             if click:
                 pygame.draw.rect(self.screen, pygame.Color('white'), coords_for_rect, 2)
             for elem in starts_and_ends:
-                pygame.draw.line(self.screen, elem[2], elem[0], elem[1], width=20)
+                if elem[0][1] == 69 and elem[1][1] == 319:
+                    pygame.draw.line(self.screen, elem[2],
+                                     (elem[0][0], elem[0][1] - 9), (elem[1][0], elem[1][1] + 10), width=30)
+                elif elem[0][1] == 319 and elem[1][1] == 69:
+                    pygame.draw.line(self.screen, elem[2],
+                                     (elem[0][0], elem[0][1] + 10), (elem[1][0], elem[1][1] - 9), width=30)
+                else:
+                    pygame.draw.line(self.screen, elem[2], elem[0], elem[1], width=20)
             font = pygame.font.Font(None, 30)
             text = font.render("Соедините", True, (0, 0, 0))
             text_x = 155
