@@ -265,9 +265,11 @@ class CatchingBalls:  #
         pygame.quit()
 
 
-class SearchEmoji(Board):  # класс второй мини-игры SearchEmoji
+class SearchEmoji(Board):  # класс мини-игры SearchEmoji
     def __init__(self, screen, v=None):
         global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
+
+        # на экран выводятся все надписи
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
         self.n = randrange(1, 31)
@@ -288,6 +290,7 @@ class SearchEmoji(Board):  # класс второй мини-игры SearchEmo
 
         self.all_sprites = pygame.sprite.Group()
 
+        # создаются спрайты показывающие количество "жизней"
         self.hard1 = pygame.sprite.Sprite()
         self.hard1.image = load_image("health.png")
         self.hard1.rect = self.hard1.image.get_rect()
@@ -314,9 +317,9 @@ class SearchEmoji(Board):  # класс второй мини-игры SearchEmo
 
         self.all_sprites.draw(screen)
 
-        if self.playing():
+        if self.playing():  # запускается игровой цикл мини-игры и проверяется выиграл пользователь или проиграл
             font = pygame.font.Font(None, 40)
-            text = font.render("Вы победили!!!", True, (100, 255, 100))
+            text = font.render("Вы победили!!!", True, (100, 255, 100))  # при победе выводиться зеленая надпись 'Вы победили!!!'
             text_x = 210
             text_y = 150
             text_w = text.get_width()
@@ -350,8 +353,12 @@ class SearchEmoji(Board):  # класс второй мини-игры SearchEmo
 
     def playing(self):
         running = True
+
+        # создается событие время истекло и запускается таймер
         TIMERUNOUT = pygame.USEREVENT + 1
         pygame.time.set_timer(TIMERUNOUT, 20000)
+
+        # создается событие изменяющее оставшееся время на экране
         TIMER = pygame.USEREVENT + 2
         pygame.time.set_timer(TIMER, 1000)
 
@@ -364,9 +371,10 @@ class SearchEmoji(Board):  # класс второй мини-игры SearchEmo
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.get_click(event.pos):
+                    if self.get_click(event.pos): # проверка нажатия пользователя
                         a = 'win'
                     else:
+                        # за неверный ответ отнимаетя одна "жизнь"
                         count_of_wrong_click += 1
                         if count_of_wrong_click == 1:
                             self.hard3.kill()
@@ -374,14 +382,19 @@ class SearchEmoji(Board):  # класс второй мини-игры SearchEmo
                             self.hard2.kill()
                         if count_of_wrong_click == 3:
                             self.hard1.kill()
-                if event.type == TIMERUNOUT:
+                if event.type == TIMERUNOUT: # проверка на истечение времени
                     a = 'defeat'
                 if event.type == TIMER:
+                    # уменьшение оставшегося времени выведенного на экране
                     self.time -= 1
             if a == 'win':
+                # при победе возврвщается True
                 return True
             if a == 'defeat' or count_of_wrong_click >= 3:
+                # при поражерии возвращается False
                 return False
+
+            # всё рисуется на экране
             pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
             self.screen.blit(self.desired_emoji, (250, 6))
             font = pygame.font.Font(None, 30)
@@ -398,16 +411,18 @@ class SearchEmoji(Board):  # класс второй мини-игры SearchEmo
             pygame.display.flip()
         pygame.quit()
 
-    def render(self, screen):
+    def render(self, screen): # функция отвечает за рисование всех смайликов на экране
         for y in range(self.height):
             for x in range(self.width):
-                if self.board[x][y] == 0:
-                    if (x, y) == self.desired_emoji_coords:
+                if self.board[x][y] == 0: # клетка поля еще не заполнена
+                    if (x, y) == self.desired_emoji_coords: # координаты совпадают с координатами искомого смайлика
+                        # присвоение клетке номера смайлика и рисование смайлика на экране
                         self.board[x][y] = self.n
                         self.screen.blit(self.desired_emoji,
                                          (x * self.cell_size + self.left, y * self.cell_size + self.top,
                                           self.cell_size, self.cell_size))
                     else:
+                        # выбор случайного смайлика и его рисование на экране, присвоение клетке его ноиера
                         n = randrange(1, 31)
                         while n == self.n:
                             n = randrange(1, 31)
@@ -416,20 +431,24 @@ class SearchEmoji(Board):  # класс второй мини-игры SearchEmo
                         self.screen.blit(emoji, (x * self.cell_size + self.left, y * self.cell_size + self.top,
                                                  self.cell_size, self.cell_size))
                 else:
+                    # рисование смайлика на экране
                     emoji = load_image(f'emoji{self.board[x][y]}.png')
                     self.screen.blit(emoji, (x * self.cell_size + self.left, y * self.cell_size + self.top,
                                              self.cell_size, self.cell_size))
 
     def on_click(self, cell):
+        # проверка на правильный ответ и возвращение True/False
         if cell == self.desired_emoji_coords:
             return True
         else:
             return False
 
 
-class SearchCouples(Board):
+class SearchCouples(Board): # класс мини игры SearchCouples
     def __init__(self, screen, v=None):
         global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
+
+        # на экран выводятся все надписи
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
         self.is_first = True
@@ -448,6 +467,7 @@ class SearchCouples(Board):
         text2_y = 10
         screen.blit(text2, (text2_x, text2_y))
 
+        # создаются спрайты показывающие количество "жизней"
         self.all_sprites = pygame.sprite.Group()
 
         self.hard1 = pygame.sprite.Sprite()
@@ -489,13 +509,14 @@ class SearchCouples(Board):
 
             if room == 1:
                 flag_minigames1 = True
-            elif room == 2 and v == 0:
-                flag_minigames2 = True
+            elif room == 2 and v == 0:  # переменная v - необязательная
+                flag_minigames2 = True  # она нужна для различия двух мини-игр в одной комнате
             elif room == 2 and v == 1:
                 flag_minigames2_2 = True
             elif room == 3:
                 flag_minigames3 = True
-            running3()
+            running3()  # запускает основной цикл
+
         else:
             font = pygame.font.Font(None, 40)
             text = font.render("Вы проиграли!!!", True, (100, 255, 100))
@@ -511,14 +532,15 @@ class SearchCouples(Board):
 
     def playing(self):
         running = True
-
+        # создается событие время истекло и запускается таймер
         TIMERUNOUT = pygame.USEREVENT + 1
-        pygame.time.set_timer(TIMERUNOUT, 100000)
+        pygame.time.set_timer(TIMERUNOUT, 20000)
+
+        # создается событие изменяющее оставшееся время на экране
         TIMER = pygame.USEREVENT + 2
         pygame.time.set_timer(TIMER, 1000)
 
         self.count_of_wrong_click = 0
-
         a = 'playing'
 
         while running:
@@ -527,7 +549,9 @@ class SearchCouples(Board):
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.get_click(event.pos)
+                    self.get_click(event.pos) # обработка нажатия
+
+                    # проверка на то, все ли пары найдены
                     check = True
                     for y in range(self.height):
                         for x in range(self.width):
@@ -536,9 +560,10 @@ class SearchCouples(Board):
                                 break
                     if check:
                         a = 'win'
-                if event.type == TIMERUNOUT:
+                if event.type == TIMERUNOUT: # проверка на истечение времени
                     a = 'defeat'
                 if event.type == TIMER:
+                    # уменьшение оставшегося времени выведенного на экране
                     self.time -= 1
             if self.count_of_wrong_click == 1:
                 self.hard3.kill()
@@ -547,9 +572,13 @@ class SearchCouples(Board):
             if self.count_of_wrong_click == 3:
                 self.hard1.kill()
             if a == 'win':
+                # при победе возврвщается True
                 return True
-            if a == 'defeat' or self.count_of_wrong_click >= 3:
+            if a == 'defeat' or count_of_wrong_click >= 3:
+                # при поражерии возвращается False
                 return False
+
+            # всё рисуется на экране
             pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
             font = pygame.font.Font(None, 30)
             text = font.render("Найдите пары", True, (0, 0, 0))
@@ -566,7 +595,7 @@ class SearchCouples(Board):
         pygame.quit()
 
     def render(self, screen):
-        if self.is_first:
+        if self.is_first: # в первый запуск функции всем клеткаи поля присваиваются случайные номера смайликов
             self.is_first = False
             for n in range(1, 26):
                 for _ in range(4):
@@ -578,11 +607,12 @@ class SearchCouples(Board):
                     self.screen.blit(emoji, (x * self.cell_size + self.left, y * self.cell_size + self.top,
                                              self.cell_size, self.cell_size))
 
-        if self.is_clicked:
+        if self.is_clicked: # если пользователь нажал на смайлик, появляется обводка
             pygame.draw.rect(screen, pygame.Color('white'), (
                 self.curr_coords[0] * self.cell_size + self.left, self.curr_coords[1] * self.cell_size + self.top,
                 self.cell_size, self.cell_size))
 
+        # рисование всех смайликов
         for y in range(self.height):
             for x in range(self.width):
                 if self.board[x][y] == -1:
@@ -592,10 +622,11 @@ class SearchCouples(Board):
                     self.screen.blit(emoji, (x * self.cell_size + self.left, y * self.cell_size + self.top,
                                              self.cell_size, self.cell_size))
 
-    def on_click(self, cell):
-        if self.board[cell[0]][cell[1]] == -1:
+    def on_click(self, cell): # обработка нажатия
+        if self.board[cell[0]][cell[1]] == -1: # нажатие на пустую клетку игнорируется
             return
         if self.is_clicked:
+            # если пользователь уже нажал на один смайл проверяется насовпадение смайликов
             if cell == self.curr_coords:
                 self.is_clicked = False
                 self.curr_coords = None
@@ -610,6 +641,7 @@ class SearchCouples(Board):
                 else:
                     self.count_of_wrong_click += 1
         else:
+            # пользователь ещё не нажимал на смайл, смайл запоминается для последующей проверки
             self.is_clicked = True
             self.curr_coords = cell
             self.curr_n = self.board[cell[0]][cell[1]]
@@ -621,12 +653,11 @@ class ConnectingWires:
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
 
+        # каждому проводу рандомно присваивается свой цвет
         self.colors = [pygame.Color("red"), pygame.Color("orange"), pygame.Color("green"),
                        pygame.Color("blue"), pygame.Color("yellow"), pygame.Color("purple")]
 
         shuffle(self.colors)
-
-
         self.left_wires_coords = {
             (150, 60, 60, 20): self.colors[0],
             (150, 110, 60, 20): self.colors[1],
@@ -637,7 +668,6 @@ class ConnectingWires:
         }
 
         shuffle(self.colors)
-
         self.right_wires_coords = {
             (440, 60, 60, 20): self.colors[0],
             (440, 110, 60, 20): self.colors[1],
@@ -659,6 +689,7 @@ class ConnectingWires:
         text2_y = 10
         screen.blit(text2, (text2_x, text2_y))
 
+        # создаются спрайты показывающие количество "жизней"
         self.all_sprites = pygame.sprite.Group()
 
         self.hard1 = pygame.sprite.Sprite()
@@ -720,6 +751,7 @@ class ConnectingWires:
             running3()
 
     def get_color(self, pos):
+        # возвращение цвета выбранного провода
         x, y = pos
         if y in range(60, 81):
             if x in range(150, 210):
@@ -754,6 +786,7 @@ class ConnectingWires:
         return False
 
     def get_coords(self, pos):
+        # возвращение координат провода
         x, y = pos
         if y in range(60, 81):
             if x in range(150, 210):
@@ -790,8 +823,11 @@ class ConnectingWires:
     def playing(self):
         running = True
 
+        # создается событие время истекло и запускается таймер
         TIMERUNOUT = pygame.USEREVENT + 1
         pygame.time.set_timer(TIMERUNOUT, 20000)
+
+        # создается событие изменяющее оставшееся время на экране
         TIMER = pygame.USEREVENT + 2
         pygame.time.set_timer(TIMER, 1000)
 
@@ -800,7 +836,7 @@ class ConnectingWires:
         color = None
         count_of_wrong_click = 0
         count_of_connected_wires = 0
-        starts_and_ends = []
+        starts_and_ends = [] # список начал, концов, цветов соединенный прводов; нужен для рисования на экране
 
         while running:
             screen.fill((0, 0, 0))
@@ -808,38 +844,38 @@ class ConnectingWires:
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.get_coords(event.pos):
-                        if click:
-                            if self.get_color(event.pos) == color:
-                                click = False
-                                if coords_for_rect == self.get_coords(event.pos):
-                                    pass
-                                else:
-                                    count_of_connected_wires += 1
-                                    if coords_for_rect[0] < self.get_coords(event.pos)[0]:
-                                        b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
-                                             self.get_color(event.pos))
-                                        starts_and_ends.append(b)
-                                    else:
-                                        b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
-                                             self.get_color(event.pos))
-                                        starts_and_ends.append(b)
+                    if click: # когда провод уже выбран, проверяется на совпадение цветв пары
+                        if self.get_color(event.pos) == color:
+                            click = False
+                            if coords_for_rect == self.get_coords(event.pos):
+                                pass
                             else:
-                                count_of_wrong_click += 1
-                                if count_of_wrong_click == 1:
-                                    self.hard3.kill()
-                                if count_of_wrong_click == 2:
-                                    self.hard2.kill()
-                                if count_of_wrong_click == 3:
-                                    self.hard1.kill()
+                                count_of_connected_wires += 1
+                                if coords_for_rect[0] < self.get_coords(event.pos)[0]:
+                                    b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
+                                         self.get_color(event.pos))
+                                    starts_and_ends.append(b)
+                                else:
+                                    b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
+                                         self.get_color(event.pos))
+                                    starts_and_ends.append(b)
                         else:
-                            click = True
-                            coords_for_rect = self.get_coords(event.pos)
-                            color = self.get_color(event.pos)
+                            count_of_wrong_click += 1
+                            if count_of_wrong_click == 1:
+                                self.hard3.kill()
+                            if count_of_wrong_click == 2:
+                                self.hard2.kill()
+                            if count_of_wrong_click == 3:
+                                self.hard1.kill()
+                    else: # провод на который нажили запоминается
+                        click = True
+                        coords_for_rect = self.get_coords(event.pos)
+                        color = self.get_color(event.pos)
                 if event.type == TIMERUNOUT:
                     a = 'defeat'
                 if event.type == TIMER:
                     self.time -= 1
+            self.screen.fill((0, 0, 0))
             pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
             for coords in self.left_wires_coords.keys():
                 pygame.draw.rect(self.screen, self.left_wires_coords[coords], coords)
@@ -888,6 +924,8 @@ class Summas(Board):
         self.curr_n = None
         self.curr_coords = None
         super().__init__(screen)
+
+        # вывод всех надписей на экран
         font = pygame.font.Font(None, 20)
         text = font.render("Найдите пары чисел,", True, (0, 0, 0))
         text_x = 155
@@ -903,6 +941,7 @@ class Summas(Board):
         text2_y = 10
         screen.blit(text2, (text2_x, text2_y))
 
+        # создаются спрайты показывающие количество "жизней"
         self.all_sprites = pygame.sprite.Group()
 
         self.hard1 = pygame.sprite.Sprite()
@@ -967,8 +1006,11 @@ class Summas(Board):
     def playing(self):
         running = True
 
+        # создается событие время истекло и запускается таймер
         TIMERUNOUT = pygame.USEREVENT + 1
-        pygame.time.set_timer(TIMERUNOUT, 500000)
+        pygame.time.set_timer(TIMERUNOUT, 20000)
+
+        # создается событие изменяющее оставшееся время на экране
         TIMER = pygame.USEREVENT + 2
         pygame.time.set_timer(TIMER, 1000)
 
@@ -977,6 +1019,7 @@ class Summas(Board):
         a = 'playing'
 
         while running:
+            # аналогично мини-игре SearchCouples, только вместо пар смайликов пары чисел
             self.screen.fill((0, 0, 0))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -1025,7 +1068,7 @@ class Summas(Board):
         pygame.quit()
 
     def render(self, screen):
-        if self.is_first:
+        if self.is_first: # в первый запуск функции всем клеткам присваиваются свои числа
             self.is_first = False
             numbers = list(range(1, 101))
             for y in range(self.height):
@@ -1033,11 +1076,12 @@ class Summas(Board):
                     n = numbers.index(choice(numbers))
                     self.board[x][y] = numbers.pop(n)
 
-        if self.is_clicked:
+        if self.is_clicked: # выбранная клетка выделяется белым
             pygame.draw.rect(screen, pygame.Color('white'), (
                 self.curr_coords[0] * self.cell_size + self.left, self.curr_coords[1] * self.cell_size + self.top,
                 self.cell_size, self.cell_size))
 
+        # рисование чисел и поля на экране
         for y in range(self.height):
             for x in range(self.width):
                 if self.board[x][y] == -1:
@@ -1058,6 +1102,7 @@ class Summas(Board):
                     self.screen.blit(text, (text_x, text_y))
 
     def on_click(self, cell):
+        # обработка нажатия аналогична мини-игре SearchCouples, только проверяется сумма выбранных чисел
         if self.board[cell[0]][cell[1]] == -1:
             return
         if self.is_clicked:
@@ -1088,7 +1133,7 @@ def running(screen, v=None):  # функция, отвечающая за пер
     pygame.display.set_caption('Игра')  # меняем заголовок окна
     shuffle(minigames)  # меняем последовательность в списке
     a = minigames.pop()  # берем элемент из списка, одновременно удалем число
-    a = 1  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # a = 1  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if a == 0:  # вызываем игру в зависимости от числа
         Summas(screen, v)
     elif a == 1:
