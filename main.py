@@ -1,8 +1,10 @@
+import sys
+
 import pygame
 import os
-from random import randrange, shuffle
+from random import randrange, shuffle, choice
 
-flag = True
+flag = True             # задаем переменные, загружаю картинки
 flag_minigames1 = False
 flag_minigames2 = False
 flag_minigames3 = False
@@ -36,10 +38,11 @@ person.rect = person.image.get_rect()
 person.rect.x = 0
 person.rect.y = h - 205
 
+
 ##############################
 
 
-def load_image(name, colorkey=None):
+def load_image(name, colorkey=None):      # функция для загрузки картинок
     fullname = os.path.join('data', name)
     image = pygame.image.load(fullname)
     if colorkey is not None:
@@ -52,7 +55,7 @@ def load_image(name, colorkey=None):
     return image
 
 
-class Board:
+class Board:   # создается класс Board для клетчатого поля, ниже несколько мини-игр наследуются от него
     def __init__(self, screen):
         self.width = 10
         self.height = 10
@@ -96,7 +99,7 @@ class Board:
                     self.cell_size), 1)
 
 
-class Ball(pygame.sprite.Sprite):
+class Ball(pygame.sprite.Sprite):  # класс Ball для создания спрайтов в мини-игре CatchingBalls
     def __init__(self, *group):
         super().__init__(*group)
         self.image = load_image("ball.png")
@@ -105,7 +108,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect.y = 0
 
 
-class CatchingBalls:
+class CatchingBalls:  #
     def __init__(self, screen, v=None):
         global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
         self.screen = screen
@@ -261,7 +264,7 @@ class CatchingBalls:
         pygame.quit()
 
 
-class SearchEmoji(Board):
+class SearchEmoji(Board):  # класс второй мини-игры SearchEmoji
     def __init__(self, screen, v=None):
         global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
         self.screen = screen
@@ -320,15 +323,15 @@ class SearchEmoji(Board):
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
-            if room == 1:
+            if room == 1:  # при победе проверяется в какой комнате была вызвана мини-игра и меняет флаг на True
                 flag_minigames1 = True
-            elif room == 2 and v == 0:
-                flag_minigames2 = True
+            elif room == 2 and v == 0:  # переменная v - необязательная
+                flag_minigames2 = True  # она нужна для различия двух мини-игр в одной комнате
             elif room == 2 and v == 1:
                 flag_minigames2_2 = True
             elif room == 3:
                 flag_minigames3 = True
-            running3()
+            running3()  # запускает основной цикл
 
         else:
             font = pygame.font.Font(None, 40)
@@ -340,10 +343,7 @@ class SearchEmoji(Board):
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
-            # start_ticks = pygame.time.get_ticks()  # пытался сделать таймер с надписью "Вы проиграли!"
-            # for event in pygame.event.get():
-            #     seconds = (pygame.time.get_ticks() - start_ticks) / 1000
-            #     if seconds > 10:
+            minigames.append(1)  # при проигрыше возвращает мини-игру в список и запускает главный цикл
             running3()
 
 
@@ -400,13 +400,6 @@ class SearchEmoji(Board):
     def render(self, screen):
         for y in range(self.height):
             for x in range(self.width):
-                # pygame.draw.rect(screen, colors[self.board[y][x]], (
-                #     x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
-                #     self.cell_size))
-
-                # pygame.draw.rect(screen, pygame.Color("white"), (
-                #     x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
-                #     self.cell_size), 1)
                 if self.board[x][y] == 0:
                     if (x, y) == self.desired_emoji_coords:
                         self.board[x][y] = self.n
@@ -512,6 +505,7 @@ class SearchCouples(Board):
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
+            minigames.append(2)
             running3()
 
     def playing(self):
@@ -721,6 +715,7 @@ class ConnectingWires:
             pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
                                                  text_w + 20, text_h + 20))
             screen.blit(text, (text_x, text_y))
+            minigames.append(3)
             running3()
 
     def get_color(self, pos):
@@ -874,16 +869,219 @@ class ConnectingWires:
         pygame.quit()
 
 
-minigames = [0, 1, 2, 3]
+class Summas(Board):
+    def __init__(self, screen, v=None):
+        global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
+        self.screen = screen
+        pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
+        self.is_first = True
+        self.is_clicked = False
+        self.curr_n = None
+        self.curr_coords = None
+        super().__init__(screen)
+        font = pygame.font.Font(None, 20)
+        text = font.render("Найдите пары чисел,", True, (0, 0, 0))
+        text_x = 155
+        text_y = 6
+        screen.blit(text, (text_x, text_y))
+        text1 = font.render("где сума равна 101", True, (0, 0, 0))
+        text_x1 = 155
+        text_y1 = 10
+        screen.blit(text1, (text_x1, text_y1))
+        self.time = 499
+        text2 = font.render(str(self.time), True, (0, 0, 0))
+        text2_x = 380
+        text2_y = 10
+        screen.blit(text2, (text2_x, text2_y))
+
+        self.all_sprites = pygame.sprite.Group()
+
+        self.hard1 = pygame.sprite.Sprite()
+        self.hard1.image = load_image("health.png")
+        self.hard1.rect = self.hard1.image.get_rect()
+        self.all_sprites.add(self.hard1)
+
+        self.hard1.rect.x = 465
+        self.hard1.rect.y = 6
+
+        self.hard2 = pygame.sprite.Sprite()
+        self.hard2.image = load_image("health.png")
+        self.hard2.rect = self.hard2.image.get_rect()
+        self.all_sprites.add(self.hard2)
+
+        self.hard2.rect.x = 435
+        self.hard2.rect.y = 6
+
+        self.hard3 = pygame.sprite.Sprite()
+        self.hard3.image = load_image("health.png")
+        self.hard3.rect = self.hard3.image.get_rect()
+        self.all_sprites.add(self.hard3)
+
+        self.hard3.rect.x = 405
+        self.hard3.rect.y = 6
+
+        self.all_sprites.draw(screen)
+
+        if self.playing():
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы победили!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+
+            if room == 1:
+                flag_minigames1 = True
+            elif room == 2 and v == 0:
+                flag_minigames2 = True
+            elif room == 2 and v == 1:
+                flag_minigames2_2 = True
+            elif room == 3:
+                flag_minigames3 = True
+            running3()
+        else:
+            font = pygame.font.Font(None, 40)
+            text = font.render("Вы проиграли!!!", True, (100, 255, 100))
+            text_x = 210
+            text_y = 150
+            text_w = text.get_width()
+            text_h = text.get_height()
+            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
+                                                 text_w + 20, text_h + 20))
+            screen.blit(text, (text_x, text_y))
+            minigames.append(0)
+            running3()
+
+    def playing(self):
+        running = True
+
+        TIMERUNOUT = pygame.USEREVENT + 1
+        pygame.time.set_timer(TIMERUNOUT, 500000)
+        TIMER = pygame.USEREVENT + 2
+        pygame.time.set_timer(TIMER, 1000)
+
+        self.count_of_wrong_click = 0
+
+        a = 'playing'
+
+        while running:
+            self.screen.fill((0, 0, 0))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    self.get_click(event.pos)
+                    check = True
+                    for y in range(self.height):
+                        for x in range(self.width):
+                            if self.board[x][y] != -1:
+                                check = False
+                                break
+                    if check:
+                        a = 'win'
+                if event.type == TIMERUNOUT:
+                    a = 'defeat'
+                if event.type == TIMER:
+                    self.time -= 1
+            if self.count_of_wrong_click == 1:
+                self.hard3.kill()
+            if self.count_of_wrong_click == 2:
+                self.hard2.kill()
+            if self.count_of_wrong_click == 3:
+                self.hard1.kill()
+            if a == 'win':
+                return True
+            if a == 'defeat' or self.count_of_wrong_click >= 3:
+                return False
+            pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
+            font = pygame.font.Font(None, 25)
+            text = font.render("Найдите пары чисел,", True, (0, 0, 0))
+            text_x = 155
+            text_y = 6
+            self.screen.blit(text, (text_x, text_y))
+            text1 = font.render("где сума равна 101", True, (0, 0, 0))
+            text_x1 = 155
+            text_y1 = 21
+            self.screen.blit(text1, (text_x1, text_y1))
+            text2 = font.render(str(self.time), True, (0, 0, 0))
+            text2_x = 380
+            text2_y = 10
+            self.screen.blit(text2, (text2_x, text2_y))
+            self.render(self.screen)
+            self.all_sprites.draw(self.screen)
+            pygame.display.flip()
+        pygame.quit()
+
+    def render(self, screen):
+        if self.is_first:
+            self.is_first = False
+            numbers = list(range(1, 101))
+            for y in range(self.height):
+                for x in range(self.width):
+                    n = numbers.index(choice(numbers))
+                    self.board[x][y] = numbers.pop(n)
+
+        if self.is_clicked:
+            pygame.draw.rect(screen, pygame.Color('white'), (
+                self.curr_coords[0] * self.cell_size + self.left, self.curr_coords[1] * self.cell_size + self.top,
+                self.cell_size, self.cell_size))
+
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board[x][y] == -1:
+                    continue
+                else:
+                    pygame.draw.rect(screen, pygame.Color("white"), (
+                        x * self.cell_size + self.left, y * self.cell_size + self.top, self.cell_size,
+                        self.cell_size), 1)
+                    font = pygame.font.Font(None, 25)
+                    text = font.render(str(self.board[x][y]), True, (0, 0, 0))
+                    if self.board[x][y] == 100:
+                        text_x = x * self.cell_size + self.left + 1
+                    elif self.board[x][y] < 10:
+                        text_x = x * self.cell_size + self.left + 12
+                    else:
+                        text_x = x * self.cell_size + self.left + 6
+                    text_y = y * self.cell_size + self.top + 6
+                    self.screen.blit(text, (text_x, text_y))
+
+    def on_click(self, cell):
+        if self.board[cell[0]][cell[1]] == -1:
+            return
+        if self.is_clicked:
+            if cell == self.curr_coords:
+                self.is_clicked = False
+                self.curr_coords = None
+                self.curr_n = None
+            else:
+                if self.curr_n + self.board[cell[0]][cell[1]] == 101:
+                    self.board[cell[0]][cell[1]] = -1
+                    self.board[self.curr_coords[0]][self.curr_coords[1]] = -1
+                    self.is_clicked = False
+                    self.curr_coords = None
+                    self.curr_n = None
+                else:
+                    self.count_of_wrong_click += 1
+        else:
+            self.is_clicked = True
+            self.curr_coords = cell
+            self.curr_n = self.board[cell[0]][cell[1]]
 
 
-def running(screen, v=None):
+minigames = [0, 1, 2, 3]  # список с числом мини-игр
+
+
+def running(screen, v=None):  # функция, отвечающая за перемешивания списка и запуска мини-игр
     global minigames
-    pygame.display.set_caption('Игра')
-    a = minigames.pop()
-    # a = 0  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if a == 0:
-        CatchingBalls(screen, v)
+    pygame.display.set_caption('Игра')  # меняем заголовок окна
+    shuffle(minigames)  # меняем последовательность в списке
+    a = minigames.pop()  # берем элемент из списка, одновременно удалем число
+    # a = 1  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if a == 0:  # вызываем игру в зависимости от числа
+        Summas(screen, v)
     elif a == 1:
         SearchEmoji(screen, v)
     elif a == 2:
@@ -894,9 +1092,9 @@ def running(screen, v=None):
 #########################################
 
 
-class Thing(pygame.sprite.Sprite):
-    def __init__(self, number):
-        super(Thing, self).__init__()
+class Thing(pygame.sprite.Sprite):  # специальный класс, для всех спрайтов в комнатах и лобби
+    def __init__(self, number):  # при инициализации спрайта передаем число, по нему у спрайта ставиться нужная каринка
+        super(Thing, self).__init__()  # и задаются координаты
         self.number = number
         if number == 1:
             self.image = thing1
@@ -906,17 +1104,17 @@ class Thing(pygame.sprite.Sprite):
         elif number == 2:
             self.image = thing2
             self.rect = self.image.get_rect()
-            self.rect.x = 307
-            self.rect.y = 150
+            self.rect.x = 306
+            self.rect.y = 149
         elif number == 3:
             self.image = thing3
             self.rect = self.image.get_rect()
-            self.rect.x = 316
-            self.rect.y = 165
+            self.rect.x = 315
+            self.rect.y = 163
         elif number == 4:
             self.image = thing2_2
             self.rect = self.image.get_rect()
-            self.rect.x = 467
+            self.rect.x = 469
             self.rect.y = 232
         elif number == 5:
             self.image = bg0_butt1
@@ -927,15 +1125,14 @@ class Thing(pygame.sprite.Sprite):
             self.image = bg0_butt2
             self.rect = self.image.get_rect()
             self.rect.x = 421
-            self.rect.y = 177
+            self.rect.y = 176
         elif number == 7:
             self.image = bg0_butt3
             self.rect = self.image.get_rect()
             self.rect.x = 0
             self.rect.y = 0
 
-
-    def update(self, *args):
+    def update(self, *args):  # метод update нужен для реализации нажатия на спрайт
         if self.number == 1:
             if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
                     args[0].pos) and 215 < person.rect.x < 300 and room == 1:
@@ -959,15 +1156,14 @@ class Thing(pygame.sprite.Sprite):
         elif self.number == 6:
             if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
                     args[0].pos):
-                running5()
+                running4()
         elif self.number == 7:
             if args and args[0].type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(
                     args[0].pos):
-                running4()
+                running2()
 
 
-
-cup = Thing(1)
+cup = Thing(1)  # создаем спрайты для комнат и групппы спрайтов
 tv = Thing(2)
 micro = Thing(3)
 valli = Thing(4)
@@ -985,22 +1181,21 @@ all_sprites_room3.add(micro, person)
 all_sprites_screen1.add(butt1, butt2)
 all_sprites_screen2.add(butt3)
 
-room = 1
+room = 1  # переменна отвечающая за комнату, с которой начинается игра
 
 
-def running3():
+def running3():  # функция running3 - основной цикл игры
     global room
     pygame.init()
-    screen.blit(pr1, (0, 0))
     running2 = True
     while running2:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running2 = False
-            if room == 1:
+            if room == 1:  # выбор фона, названия окна
                 pygame.display.set_caption('room1')
                 screen.blit(bg, (0, 0))
-                if flag_minigames1 is True:
+                if flag_minigames1 is True:  # флаг мини-игры, если True, то удаляется спрайт
                     all_sprites_room1.remove(cup)
                 all_sprites_room1.draw(screen)
                 all_sprites_room1.update(event)
@@ -1020,20 +1215,8 @@ def running3():
                     all_sprites_room3.remove(micro)
                 all_sprites_room3.draw(screen)
                 all_sprites_room3.update(event)
-            if event.type == pygame.KEYDOWN:
-                if event.key == 100 or event.key == 1073741903:
-                    if person.rect.x + 78 + speed <= w:
-                        person.rect.x += speed
-                    else:
-                        person.rect.x = 650 - 78
-                    person.image = pers(flag, 'r')
-                if event.key == 97 or event.key == 1073741904:
-                    if person.rect.x - speed >= 1:
-                        person.rect.x -= speed
-                    else:
-                        person.rect.x = 0
-                    person.image = pers(flag, 'l')
-                if room == 1 and event.key == 101 and person.rect.x >= 515 and flag_minigames1 is True:
+            if event.type == pygame.KEYDOWN:  # обработка нажатия клавиш
+                if room == 1 and event.key == 101 and person.rect.x >= 515 and flag_minigames1 is True:  # переход между комнатами
                     room = 2
                     person.rect.x = 0
                 elif room == 2 and event.key == 101 and person.rect.x <= 115:
@@ -1045,23 +1228,23 @@ def running3():
                 elif room == 3 and event.key == 101 and person.rect.x <= 115:
                     room = 2
                     person.rect.x = 515
-            clock.tick(fps)
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT] or keys[pygame.K_d]:
+                elif flag_minigames3 and event.key == 101 and person.rect.x >= 515:  # конечная заставка
+                    pass
+            clock.tick(fps)  # обработка внутриигрового времени
+        keys = pygame.key.get_pressed()  # реализация ходьбы персонажа зажатием клавиши
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             if person.rect.x != 0:
                 person.rect.x -= speed
-                pygame.display.flip()
             person.image = pers(flag, 'l')
-        if keys[pygame.K_RIGHT] or keys[pygame.K_a]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             if person.rect.x + 78 <= w:
                 person.rect.x += speed
             person.image = pers(flag, 'r')
-
-        if room == 1:
+        if room == 1:  # реализация диалогового окна внизу экрана
             screen.blit(bg, (0, 0))
             all_sprites_room1.draw(screen)
             pygame.draw.rect(screen, (255, 255, 255), (8, 308, 635, 35))
-            if flag_minigames1 is True:
+            if flag_minigames1 is True:  # текст меняется по прохождению мини-игр
                 stroka = 'Мой дорогой кубок. Сколько воспоминаний нахлынуло... Я получил его на соревнованиях по пляжному волейболу.'
                 font = pygame.font.Font(None, 15)
                 text = font.render(stroka, True, (0, 0, 0))
@@ -1207,16 +1390,16 @@ def running3():
                 text_y = 330
                 screen.blit(text, (text_x, text_y))
         clock.tick(fps // 4)
-
         pygame.display.flip()
     pygame.quit()
+    sys.exit()
 
 
-def running2():
+def running2():  # первый цикл с начальной картинкой
     pygame.init()
     screen.blit(bg0, (0, 0))
     pygame_icon = pygame.image.load(r'data\ava.png')
-    pygame.display.set_icon(pygame_icon)
+    pygame.display.set_icon(pygame_icon)  # меняю аватарку игры на лицо персонажа
     pygame.display.set_caption('Лобби')
     running = True
     while running:
@@ -1226,35 +1409,14 @@ def running2():
             clock.tick(fps)
             pygame.display.flip()
             all_sprites_screen1.draw(screen)
-            all_sprites_screen1.update(event)
+            all_sprites_screen1.update(event)  # обработка нажатия на кнопки
     pygame.quit()
+    sys.exit()
 
 
-def running4():
-    pygame.init()
-    screen.blit(bg0, (0, 0))
-    pygame_icon = pygame.image.load(r'data\ava.png')
-    pygame.display.set_icon(pygame_icon)
-    pygame.display.set_caption('Лобби')
-    running = True
-    while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                running3()
-            all_sprites_screen1.draw(screen)
-            all_sprites_screen1.update(event)
-            pygame.display.flip()
-    pygame.quit()
-
-
-def running5():
+def running4():  # цикл с каринкой об авторах
     pygame.init()
     screen.blit(bg0_1, (0, 0))
-    pygame_icon = pygame.image.load(r'data\ava.png')
-    pygame.display.set_icon(pygame_icon)
-    pygame.display.set_caption('Лобби')
     running = True
     while running:
         for event in pygame.event.get():
@@ -1264,11 +1426,12 @@ def running5():
             all_sprites_screen2.update(event)
             pygame.display.flip()
     pygame.quit()
+    sys.exit()
 
 
-def pers(flag1, rotate):
-    global flag
-    if flag1 is True:
+def pers(flag1, rotate):  # вспомогательная функция, которая возвращает картинку персонажа
+    global flag  # а так же отвечает за изменение картинки на персонажа с шагом
+    if flag1 is True:  # таким образом на экране персонаж "ходит"
         if rotate == 'r':
             flag = False
             return pr3
@@ -1284,5 +1447,5 @@ def pers(flag1, rotate):
             return pr2
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # запуск проекта
     running2()
