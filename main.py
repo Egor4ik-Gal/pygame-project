@@ -641,6 +641,7 @@ class ConnectingWires:
         }
 
         # надписи выводятся на экран
+        font = pygame.font.Font(None, 30)
         self.time = 19
         text2 = font.render(str(self.time), True, (0, 0, 0))
         text2_x = 380
@@ -809,9 +810,18 @@ class ConnectingWires:
                             if count_of_wrong_click == 3:
                                 self.hard1.kill()
                     else: # провод на который нажили запоминается
-                        click = True
-                        coords_for_rect = self.get_coords(event.pos)
-                        color = self.get_color(event.pos)
+                        check = True
+                        print(self.get_coords(event.pos))
+                        print(starts_and_ends)
+                        for elem in starts_and_ends:
+                            if (self.get_coords(event.pos)[0] + 60, self.get_coords(event.pos)[1] + 9) in elem:
+                                check = False
+                            elif (self.get_coords(event.pos)[0], self.get_coords(event.pos)[1] + 9) in elem:
+                                check = False
+                        if check:
+                            click = True
+                            coords_for_rect = self.get_coords(event.pos)
+                            color = self.get_color(event.pos)
                 if event.type == TIMERUNOUT:
                     a = 'defeat'
                 if event.type == TIMER:
