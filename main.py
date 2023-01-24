@@ -26,6 +26,7 @@ pr4 = pygame.image.load(r'data\pers1.22.png')
 bg0_butt1 = pygame.image.load(r'data\firstbutt.png')
 bg0_butt2 = pygame.image.load(r'data\secondbutt.png')
 bg0_butt3 = pygame.image.load(r'data\back.png')
+bg_end = pygame.image.load(r'data\end_screen.png')
 thing1 = pygame.image.load(r'data\cup.png')
 thing2 = pygame.image.load(r'data\TV.png')
 thing2_2 = pygame.image.load(r'data\vali.png')
@@ -1087,7 +1088,7 @@ def running(screen, v=None):  # функция, отвечающая за пер
     pygame.display.set_caption('Игра')  # меняем заголовок окна
     shuffle(minigames)  # меняем последовательность в списке
     a = minigames.pop()  # берем элемент из списка, одновременно удалем число
-    # a = 1  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    a = 1  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if a == 0:  # вызываем игру в зависимости от числа
         Summas(screen, v)
     elif a == 1:
@@ -1193,7 +1194,7 @@ room = 1  # переменна отвечающая за комнату, с ко
 
 
 def running3():  # функция running3 - основной цикл игры
-    global room
+    global room, flag_minigames1, flag_minigames2, flag_minigames2_2, flag_minigames3, minigames
     pygame.init()
     running2 = True
     while running2:
@@ -1230,174 +1231,189 @@ def running3():  # функция running3 - основной цикл игры
                 elif room == 2 and event.key == 101 and person.rect.x <= 115:
                     room = 1
                     person.rect.x = 515
-                elif flag_minigames2 and event.key == 101 and person.rect.x >= 515 and flag_minigames2_2:
+                elif flag_minigames2 and event.key == 101 and person.rect.x >= 515 and flag_minigames2_2 and room == 2:
                     room = 3
                     person.rect.x = 0
                 elif room == 3 and event.key == 101 and person.rect.x <= 115:
                     room = 2
                     person.rect.x = 515
-                elif flag_minigames3 and event.key == 101 and person.rect.x >= 515:  # конечная заставка
-                    pass
+                elif flag_minigames3 and event.key == 101 and person.rect.x >= 515 and room == 3:  # конечная заставка
+                    room = 1  # возвращаю начальные переменные для начала новой игры
+                    person.rect.x = 0
+                    all_sprites_room1.clear()
+                    all_sprites_room2.clear()
+                    all_sprites_room3.clear()
+                    all_sprites_room1.add(cup, person)
+                    all_sprites_room2.add(tv, valli, person)
+                    all_sprites_room3.add(micro, person)
+                    all_sprites_screen1.add(butt1, butt2)
+                    all_sprites_screen2.add(butt3)
+                    flag_minigames3 = False
+                    flag_minigames2 = False
+                    flag_minigames2_2 = False
+                    flag_minigames1 = False
+                    minigames = [0, 1, 2, 3]
+                    running5()
             clock.tick(fps)  # обработка внутриигрового времени
-        keys = pygame.key.get_pressed()  # реализация ходьбы персонажа зажатием клавиши
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            if person.rect.x != 0:
-                person.rect.x -= speed
-            person.image = pers(flag, 'l')
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            if person.rect.x + 78 <= w:
-                person.rect.x += speed
-            person.image = pers(flag, 'r')
-        if room == 1:  # реализация диалогового окна внизу экрана
-            screen.blit(bg, (0, 0))
-            all_sprites_room1.draw(screen)
-            pygame.draw.rect(screen, (255, 255, 255), (8, 308, 635, 35))
-            if flag_minigames1 is True:  # текст меняется по прохождению мини-игр
-                stroka = 'Мой дорогой кубок. Сколько воспоминаний нахлынуло... Я получил его на соревнованиях по пляжному волейболу.'
-                font = pygame.font.Font(None, 15)
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 310
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Сразу лето вспомнилось. Тепло... Хочу под одеяло! Всё бы отдал, чтобы сейчас обратно лечь спать.'
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 320
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Но всё-таки надо собираться в школу!'
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 330
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Подсказка: "Пройдите в следующую комнату. Подойдите к двери и нажмите E"'
-                text = font.render(stroka, True, (80, 80, 80))
-                text_x = 220
-                text_y = 330
-                screen.blit(text, (text_x, text_y))
-            else:
-                stroka = 'Я проснулся от звука будильника. Как обычно хочется спать. В комнате как-то холодно.' \
-                         ' Вот бы обратно под одеяло лечь.'
-                font = pygame.font.Font(None, 15)
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 310
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Мне снился странный сон. ' \
-                         'Там я потерял свой кубок и спрашивал у всех людей на улице, не видели ли они его.'
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 320
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Кстати где кубок сейчас?'
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 330
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Подсказка: "Найдите кубок. Подойдите к нему и нажмите"'
-                text = font.render(stroka, True, (80, 80, 80))
-                text_x = 320
-                text_y = 330
-                screen.blit(text, (text_x, text_y))
-        elif room == 2:
-            screen.blit(bg2, (0, 0))
-            all_sprites_room2.draw(screen)
-            pygame.draw.rect(screen, (255, 255, 255), (8, 308, 635, 35))
-            if flag_minigames2 is True:
-                if flag_minigames2_2 is True:
-                    stroka = '*Урчание живота*'
+            keys = pygame.key.get_pressed()  # реализация ходьбы персонажа зажатием клавиши
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                if person.rect.x != 0:
+                    person.rect.x -= speed
+                person.image = pers(flag, 'l')
+            if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                if person.rect.x + 78 <= w:
+                    person.rect.x += speed
+                person.image = pers(flag, 'r')
+            if room == 1:  # реализация диалогового окна внизу экрана
+                screen.blit(bg, (0, 0))
+                all_sprites_room1.draw(screen)
+                pygame.draw.rect(screen, (255, 255, 255), (8, 308, 635, 35))
+                if flag_minigames1 is True:  # текст меняется по прохождению мини-игр
+                    stroka = 'Мой дорогой кубок. Сколько воспоминаний нахлынуло... Я получил его на соревнованиях по пляжному волейболу.'
                     font = pygame.font.Font(None, 15)
                     text = font.render(stroka, True, (0, 0, 0))
                     text_x = 10
                     text_y = 310
                     screen.blit(text, (text_x, text_y))
-                    stroka = 'Я, кажется, совершенно забыл о том, что мне в школу надо собираться . Пойду завтракать.'
+                    stroka = 'Сразу лето вспомнилось. Тепло... Хочу под одеяло! Всё бы отдал, чтобы сейчас обратно лечь спать.'
                     text = font.render(stroka, True, (0, 0, 0))
                     text_x = 10
                     text_y = 320
                     screen.blit(text, (text_x, text_y))
-                    stroka = 'Подсказка: "Пройдите в следующую комнату. Подойдите к двери и нажмите E'
+                    stroka = 'Но всё-таки надо собираться в школу!'
+                    text = font.render(stroka, True, (0, 0, 0))
+                    text_x = 10
+                    text_y = 330
+                    screen.blit(text, (text_x, text_y))
+                    stroka = 'Подсказка: "Пройдите в следующую комнату. Подойдите к двери и нажмите E"'
+                    text = font.render(stroka, True, (80, 80, 80))
+                    text_x = 220
+                    text_y = 330
+                    screen.blit(text, (text_x, text_y))
+                else:
+                    stroka = 'Я проснулся от звука будильника. Как обычно хочется спать. В комнате как-то холодно.' \
+                             ' Вот бы обратно под одеяло лечь.'
+                    font = pygame.font.Font(None, 15)
+                    text = font.render(stroka, True, (0, 0, 0))
+                    text_x = 10
+                    text_y = 310
+                    screen.blit(text, (text_x, text_y))
+                    stroka = 'Мне снился странный сон. ' \
+                             'Там я потерял свой кубок и спрашивал у всех людей на улице, не видели ли они его.'
+                    text = font.render(stroka, True, (0, 0, 0))
+                    text_x = 10
+                    text_y = 320
+                    screen.blit(text, (text_x, text_y))
+                    stroka = 'Кстати где кубок сейчас?'
+                    text = font.render(stroka, True, (0, 0, 0))
+                    text_x = 10
+                    text_y = 330
+                    screen.blit(text, (text_x, text_y))
+                    stroka = 'Подсказка: "Найдите кубок. Подойдите к нему и нажмите"'
+                    text = font.render(stroka, True, (80, 80, 80))
+                    text_x = 320
+                    text_y = 330
+                    screen.blit(text, (text_x, text_y))
+            elif room == 2:
+                screen.blit(bg2, (0, 0))
+                all_sprites_room2.draw(screen)
+                pygame.draw.rect(screen, (255, 255, 255), (8, 308, 635, 35))
+                if flag_minigames2 is True:
+                    if flag_minigames2_2 is True:
+                        stroka = '*Урчание живота*'
+                        font = pygame.font.Font(None, 15)
+                        text = font.render(stroka, True, (0, 0, 0))
+                        text_x = 10
+                        text_y = 310
+                        screen.blit(text, (text_x, text_y))
+                        stroka = 'Я, кажется, совершенно забыл о том, что мне в школу надо собираться . Пойду завтракать.'
+                        text = font.render(stroka, True, (0, 0, 0))
+                        text_x = 10
+                        text_y = 320
+                        screen.blit(text, (text_x, text_y))
+                        stroka = 'Подсказка: "Пройдите в следующую комнату. Подойдите к двери и нажмите E'
+                        text = font.render(stroka, True, (80, 80, 80))
+                        text_x = 10
+                        text_y = 330
+                        screen.blit(text, (text_x, text_y))
+                    else:
+                        stroka = 'Новости: ~Сегодня в Москве аномальный снегопад. Ночью выпала месячная норма осадков.~'
+                        font = pygame.font.Font(None, 15)
+                        text = font.render(stroka, True, (0, 0, 0))
+                        text_x = 10
+                        text_y = 310
+                        screen.blit(text, (text_x, text_y))
+                        stroka = 'Много снега это классно, но точно не для ЖКХ. Может с друзьями снеговика слепить? Мой робот Валли совершенно.'
+                        text = font.render(stroka, True, (0, 0, 0))
+                        text_x = 10
+                        text_y = 320
+                        screen.blit(text, (text_x, text_y))
+                        stroka = 'зыпылился. Пожалуй надо стереть пыть.'
+                        text = font.render(stroka, True, (0, 0, 0))
+                        text_x = 10
+                        text_y = 330
+                        screen.blit(text, (text_x, text_y))
+                        stroka = 'Подсказка: "Почистите робота. Подойдите к нему и нажмите"'
+                        text = font.render(stroka, True, (80, 80, 80))
+                        text_x = 320
+                        text_y = 330
+                        screen.blit(text, (text_x, text_y))
+                else:
+                    stroka = 'Может новости включить. Что за странные мысли, я их последний раз месяца 2 назад смотрел.'
+                    font = pygame.font.Font(None, 15)
+                    text = font.render(stroka, True, (0, 0, 0))
+                    text_x = 10
+                    text_y = 310
+                    screen.blit(text, (text_x, text_y))
+                    stroka = 'Хотя надо же быть немного в курсе событий. Пожалуй сегодня посмотрю.'
+                    text = font.render(stroka, True, (0, 0, 0))
+                    text_x = 10
+                    text_y = 320
+                    screen.blit(text, (text_x, text_y))
+                    stroka = 'Подсказка: "Включите телевизор. Подойдите к нему и нажмите"'
+                    text = font.render(stroka, True, (80, 80, 80))
+                    text_x = 10
+                    text_y = 330
+                    screen.blit(text, (text_x, text_y))
+            elif room == 3:
+                screen.blit(bg3, (0, 0))
+                all_sprites_room3.draw(screen)
+                pygame.draw.rect(screen, (255, 255, 255), (8, 308, 635, 35))
+                if flag_minigames3 is True:
+                    stroka = 'Наконец-то завтрак. Как же я люблю сырники. Я поел за 10 минут. Совершенно не хотелось торопиться.'
+                    font = pygame.font.Font(None, 15)
+                    text = font.render(stroka, True, (0, 0, 0))
+                    text_x = 10
+                    text_y = 310
+                    screen.blit(text, (text_x, text_y))
+                    stroka = 'Осталось только взять рюкзак и одеться. Надеюсь сегодня у меня будет хороший день.'
+                    text = font.render(stroka, True, (0, 0, 0))
+                    text_x = 10
+                    text_y = 320
+                    screen.blit(text, (text_x, text_y))
+                    stroka = 'Подсказка: "Подойдите к двери и нажмите E"'
                     text = font.render(stroka, True, (80, 80, 80))
                     text_x = 10
                     text_y = 330
                     screen.blit(text, (text_x, text_y))
                 else:
-                    stroka = 'Новости: ~Сегодня в Москве аномальный снегопад. Ночью выпала месячная норма осадков.~'
+                    stroka = 'Я умылся и почистил зубы. Теперь можно позавтракать. Но времени совсем мало осталось.'
                     font = pygame.font.Font(None, 15)
                     text = font.render(stroka, True, (0, 0, 0))
                     text_x = 10
                     text_y = 310
                     screen.blit(text, (text_x, text_y))
-                    stroka = 'Много снега это классно, но точно не для ЖКХ. Может с друзьями снеговика слепить? Мой робот Валли совершенно.'
+                    stroka = 'Через 15 минут уже надо из дома выходить. О мама оставила завтрак на столе. Надо подогреть.'
                     text = font.render(stroka, True, (0, 0, 0))
                     text_x = 10
                     text_y = 320
                     screen.blit(text, (text_x, text_y))
-                    stroka = 'зыпылился. Пожалуй надо стереть пыть.'
-                    text = font.render(stroka, True, (0, 0, 0))
+                    stroka = 'Подсказка: "Подогрейте завтрак. Подойдите к микроволновке и нажмите"'
+                    text = font.render(stroka, True, (80, 80, 80))
                     text_x = 10
                     text_y = 330
                     screen.blit(text, (text_x, text_y))
-                    stroka = 'Подсказка: "Почистите робота. Подойдите к нему и нажмите"'
-                    text = font.render(stroka, True, (80, 80, 80))
-                    text_x = 320
-                    text_y = 330
-                    screen.blit(text, (text_x, text_y))
-            else:
-                stroka = 'Может новости включить. Что за странные мысли, я их последний раз месяца 2 назад смотрел.'
-                font = pygame.font.Font(None, 15)
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 310
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Хотя надо же быть немного в курсе событий. Пожалуй сегодня посмотрю.'
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 320
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Подсказка: "Включите телевизор. Подойдите к нему и нажмите"'
-                text = font.render(stroka, True, (80, 80, 80))
-                text_x = 10
-                text_y = 330
-                screen.blit(text, (text_x, text_y))
-        elif room == 3:
-            screen.blit(bg3, (0, 0))
-            all_sprites_room3.draw(screen)
-            pygame.draw.rect(screen, (255, 255, 255), (8, 308, 635, 35))
-            if flag_minigames3 is True:
-                stroka = 'Наконец-то завтрак. Как же я люблю сырники. Я поел за 10 минут. Совершенно не хотелось торопиться.'
-                font = pygame.font.Font(None, 15)
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 310
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Осталось только взять рюкзак и одеться. Надеюсь сегодня у меня будет хороший день.'
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 320
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Подсказка: "Подойдите к двери и нажмите E"'
-                text = font.render(stroka, True, (80, 80, 80))
-                text_x = 10
-                text_y = 330
-                screen.blit(text, (text_x, text_y))
-            else:
-                stroka = 'Я умылся и почистил зубы. Теперь можно позавтракать. Но времени совсем мало осталось.'
-                font = pygame.font.Font(None, 15)
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 310
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Через 15 минут уже надо из дома выходить. О мама оставила завтрак на столе. Надо подогреть.'
-                text = font.render(stroka, True, (0, 0, 0))
-                text_x = 10
-                text_y = 320
-                screen.blit(text, (text_x, text_y))
-                stroka = 'Подсказка: "Подогрейте завтрак. Подойдите к микроволновке и нажмите"'
-                text = font.render(stroka, True, (80, 80, 80))
-                text_x = 10
-                text_y = 330
-                screen.blit(text, (text_x, text_y))
-        clock.tick(fps // 4)
+        clock.tick(fps)
         pygame.display.flip()
     pygame.quit()
     sys.exit()
@@ -1425,6 +1441,21 @@ def running2():  # первый цикл с начальной картинко�
 def running4():  # цикл с каринкой об авторах
     pygame.init()
     screen.blit(bg0_1, (0, 0))
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            all_sprites_screen2.draw(screen)
+            all_sprites_screen2.update(event)
+            pygame.display.flip()
+    pygame.quit()
+    sys.exit()
+
+
+def running5():  # цикл с конечной заставкой
+    pygame.init()
+    screen.blit(bg_end, (0, 0))
     running = True
     while running:
         for event in pygame.event.get():
