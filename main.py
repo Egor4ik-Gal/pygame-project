@@ -1,5 +1,4 @@
 import sys
-
 import pygame
 import os
 from random import randrange, shuffle, choice
@@ -13,7 +12,7 @@ size2 = w, h = 650, 350
 screen = pygame.display.set_mode(size2)
 clock = pygame.time.Clock()
 fps = 60
-speed = 20
+speed = 10
 bg0 = pygame.image.load(r'data\first_screen.png')
 bg0_1 = pygame.image.load(r'data\authors.png')
 bg = pygame.image.load(r'data\room1.png')
@@ -574,7 +573,7 @@ class SearchCouples(Board): # класс мини игры SearchCouples
             if a == 'win':
                 # при победе возврвщается True
                 return True
-            if a == 'defeat' or count_of_wrong_click >= 3:
+            if a == 'defeat' or self.count_of_wrong_click >= 3:
                 # при поражерии возвращается False
                 return False
 

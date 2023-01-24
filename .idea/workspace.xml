@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="2ffaac0c-5681-44d7-837b-3507a76d3f89" name="Changes" comment="fix2">
+    <list default="true" id="2ffaac0c-5681-44d7-837b-3507a76d3f89" name="Changes" comment="end_fix2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -17,6 +17,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="KEEP" />
   </component>
   <component name="ProjectId" id="2J39L7wesv7d3j4LSoyGTRj4Vk8" />
   <component name="ProjectViewState">
@@ -110,7 +111,21 @@
       <option name="project" value="LOCAL" />
       <updated>1674555069168</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="end_fix">
+      <created>1674581525226</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1674581525227</updated>
+    </task>
+    <task id="LOCAL-00005" summary="end_fix2">
+      <created>1674581545466</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1674581545466</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -141,6 +156,8 @@
     <MESSAGE value="room-and-char" />
     <MESSAGE value="room-and-char-border" />
     <MESSAGE value="fix2" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix2" />
+    <MESSAGE value="end_fix" />
+    <MESSAGE value="end_fix2" />
+    <option name="LAST_COMMIT_MESSAGE" value="end_fix2" />
   </component>
 </project>
