@@ -99,171 +99,6 @@ class Board:   # создается класс Board для клетчатого
                     self.cell_size), 1)
 
 
-class Ball(pygame.sprite.Sprite):  # класс Ball для создания спрайтов в мини-игре CatchingBalls
-    def __init__(self, *group):
-        super().__init__(*group)
-        self.image = load_image("ball.png")
-        self.rect = self.image.get_rect()
-        self.rect.x = 150 + randrange(315)
-        self.rect.y = 0
-
-
-class CatchingBalls:  #
-    def __init__(self, screen, v=None):
-        global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
-        self.screen = screen
-        pygame.draw.rect(screen, (255, 255, 255), (150, 0, 350, 350))
-        pygame.draw.rect(screen, (200, 170, 100), (150, 400, 480, 80))
-        font = pygame.font.Font(None, 30)
-        text = font.render("Поймайте 30 шариков!", True, (0, 0, 0))
-        text_x = 110
-        text_y = 10
-        screen.blit(text, (text_x, text_y))
-
-        self.all_sprites = pygame.sprite.Group()
-        self.basket = pygame.sprite.Sprite()
-        self.basket.image = load_image("basket.png")
-        self.basket.rect = self.basket.image.get_rect()
-        self.all_sprites.add(self.basket)
-
-        self.basket.rect.x = 150
-        self.basket.rect.y = 250
-
-        self.hard1 = pygame.sprite.Sprite()
-        self.hard1.image = load_image("health.png")
-        self.hard1.rect = self.basket.image.get_rect()
-        self.all_sprites.add(self.hard1)
-
-        self.hard1.rect.x = 465
-        self.hard1.rect.y = 10
-
-        self.hard2 = pygame.sprite.Sprite()
-        self.hard2.image = load_image("health.png")
-        self.hard2.rect = self.basket.image.get_rect()
-        self.all_sprites.add(self.hard2)
-
-        self.hard2.rect.x = 435
-        self.hard2.rect.y = 10
-
-        self.hard3 = pygame.sprite.Sprite()
-        self.hard3.image = load_image("health.png")
-        self.hard3.rect = self.basket.image.get_rect()
-        self.all_sprites.add(self.hard3)
-
-        self.hard3.rect.x = 405
-        self.hard3.rect.y = 10
-
-        self.all_sprites.draw(screen)
-
-        # pygame.display.flip()
-        # self.playing()
-        if self.playing():
-            font = pygame.font.Font(None, 40)
-            text = font.render("Вы победили!!!", True, (100, 255, 100))
-            text_x = 210
-            text_y = 150
-            text_w = text.get_width()
-            text_h = text.get_height()
-            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
-                                                 text_w + 20, text_h + 20))
-            screen.blit(text, (text_x, text_y))
-            if room == 1:
-                flag_minigames1 = True
-            elif room == 2 and v == 0:
-                flag_minigames2 = True
-            elif room == 2 and v == 1:
-                flag_minigames2_2 = True
-            elif room == 3:
-                flag_minigames3 = True
-            running3()
-
-        else:
-            font = pygame.font.Font(None, 40)
-            text = font.render("Вы проиграли!!!", True, (255, 0, 0))
-            text_x = 210
-            text_y = 150
-            text_w = text.get_width()
-            text_h = text.get_height()
-            pygame.draw.rect(screen, (0, 0, 0), (text_x - 10, text_y - 10,
-                                                 text_w + 20, text_h + 20))
-            screen.blit(text, (text_x, text_y))
-            running3()
-
-    def playing(self):
-        running = True
-
-        CREATINGBALLS = pygame.USEREVENT + 1
-        FALL = pygame.USEREVENT + 2
-        pygame.time.set_timer(CREATINGBALLS, 900)
-        count_of_fallen_balls = 0
-        count_of_catched_balls = 0
-        count = 0
-        list_of_balls = []
-        while running:
-            self.screen.fill((0, 0, 0))
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                if event.type == CREATINGBALLS:
-                    list_of_balls.append(Ball(self.all_sprites))
-                    count += 1
-                    if count == 33:
-                        pygame.time.set_timer(CREATINGBALLS, 0)
-                if event.type == FALL:
-                    for i in range(len(list_of_balls)):
-                        list_of_balls[i].rect.y += 1
-                        if list_of_balls[i].rect.y == 310:
-                            count_of_fallen_balls += 1
-                            list_of_balls[i].kill()
-                            list_of_balls.remove(list_of_balls[i])
-                            if count_of_fallen_balls == 1:
-                                self.hard3.kill()
-                            if count_of_fallen_balls == 2:
-                                self.hard2.kill()
-                            if count_of_fallen_balls == 3:
-                                self.hard1.kill()
-                            break
-                        if list_of_balls[i].rect.center[1] in range(270, 310) and \
-                                list_of_balls[i].rect.center[0] in range(self.basket.rect.x, self.basket.rect.x + 100):
-                            list_of_balls[i].kill()
-                            count_of_catched_balls += 1
-                            list_of_balls.remove(list_of_balls[i])
-                            break
-                if count == 1:
-                    pygame.time.set_timer(FALL, 4)
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_LEFT]:
-                if self.basket.rect.x > 145:
-                    self.basket.rect.x -= 1
-                    clock.tick(300)
-            if keys[pygame.K_RIGHT]:
-                if self.basket.rect.x < 435:
-                    self.basket.rect.x += 1
-                    clock.tick(300)
-            pygame.draw.rect(self.screen, (255, 255, 255), (150, 0, 350, 350))
-            pygame.draw.rect(self.screen, (200, 170, 100), (150, 300, 350, 60))
-            font = pygame.font.Font(None, 30)
-            text = font.render("Поймайте 30 шариков!", True, (0, 0, 0))
-            text_x = 155
-            text_y = 10
-            self.screen.blit(text, (text_x, text_y))
-
-            stroka = f'Вы поймали {count_of_catched_balls}/30'
-            text2 = font.render(stroka, True, (0, 0, 0))
-            text2_x = 155
-            text2_y = 35
-            self.screen.blit(text2, (text2_x, text2_y))
-            self.all_sprites.draw(self.screen)
-            # clock.tick(fps)
-            pygame.display.flip()
-
-            if count_of_fallen_balls >= 3:
-                return False
-            if count_of_catched_balls == 30:
-                return True
-        pygame.quit()
-
-
 class SearchEmoji(Board):  # класс мини-игры SearchEmoji
     def __init__(self, screen, v=None):
         global flag_minigames1, flag_minigames2, flag_minigames3, room, flag_minigames2_2
@@ -652,11 +487,11 @@ class ConnectingWires:
         self.screen = screen
         pygame.draw.rect(screen, (100, 100, 100), (150, 0, 350, 350))
 
-        # каждому проводу рандомно присваивается свой цвет
         self.colors = [pygame.Color("red"), pygame.Color("orange"), pygame.Color("green"),
                        pygame.Color("blue"), pygame.Color("yellow"), pygame.Color("purple")]
 
         shuffle(self.colors)
+
         self.left_wires_coords = {
             (150, 60, 60, 20): self.colors[0],
             (150, 110, 60, 20): self.colors[1],
@@ -667,6 +502,7 @@ class ConnectingWires:
         }
 
         shuffle(self.colors)
+
         self.right_wires_coords = {
             (440, 60, 60, 20): self.colors[0],
             (440, 110, 60, 20): self.colors[1],
@@ -675,7 +511,6 @@ class ConnectingWires:
             (440, 260, 60, 20): self.colors[4],
             (440, 310, 60, 20): self.colors[5]
         }
-
 
         font = pygame.font.Font(None, 30)
         text = font.render("Найдите:", True, (0, 0, 0))
@@ -688,7 +523,6 @@ class ConnectingWires:
         text2_y = 10
         screen.blit(text2, (text2_x, text2_y))
 
-        # создаются спрайты показывающие количество "жизней"
         self.all_sprites = pygame.sprite.Group()
 
         self.hard1 = pygame.sprite.Sprite()
@@ -822,11 +656,8 @@ class ConnectingWires:
     def playing(self):
         running = True
 
-        # создается событие время истекло и запускается таймер
         TIMERUNOUT = pygame.USEREVENT + 1
         pygame.time.set_timer(TIMERUNOUT, 20000)
-
-        # создается событие изменяющее оставшееся время на экране
         TIMER = pygame.USEREVENT + 2
         pygame.time.set_timer(TIMER, 1000)
 
@@ -835,7 +666,7 @@ class ConnectingWires:
         color = None
         count_of_wrong_click = 0
         count_of_connected_wires = 0
-        starts_and_ends = [] # список начал, концов, цветов соединенный прводов; нужен для рисования на экране
+        starts_and_ends = []
 
         while running:
             screen.fill((0, 0, 0))
@@ -843,38 +674,38 @@ class ConnectingWires:
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if click: # когда провод уже выбран, проверяется на совпадение цветв пары
-                        if self.get_color(event.pos) == color:
-                            click = False
-                            if coords_for_rect == self.get_coords(event.pos):
-                                pass
-                            else:
-                                count_of_connected_wires += 1
-                                if coords_for_rect[0] < self.get_coords(event.pos)[0]:
-                                    b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
-                                         self.get_color(event.pos))
-                                    starts_and_ends.append(b)
+                    if self.get_coords(event.pos):
+                        if click:
+                            if self.get_color(event.pos) == color:
+                                click = False
+                                if coords_for_rect == self.get_coords(event.pos):
+                                    pass
                                 else:
-                                    b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
-                                         self.get_color(event.pos))
-                                    starts_and_ends.append(b)
+                                    count_of_connected_wires += 1
+                                    if coords_for_rect[0] < self.get_coords(event.pos)[0]:
+                                        b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
+                                             self.get_color(event.pos))
+                                        starts_and_ends.append(b)
+                                    else:
+                                        b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
+                                             self.get_color(event.pos))
+                                        starts_and_ends.append(b)
+                            else:
+                                count_of_wrong_click += 1
+                                if count_of_wrong_click == 1:
+                                    self.hard3.kill()
+                                if count_of_wrong_click == 2:
+                                    self.hard2.kill()
+                                if count_of_wrong_click == 3:
+                                    self.hard1.kill()
                         else:
-                            count_of_wrong_click += 1
-                            if count_of_wrong_click == 1:
-                                self.hard3.kill()
-                            if count_of_wrong_click == 2:
-                                self.hard2.kill()
-                            if count_of_wrong_click == 3:
-                                self.hard1.kill()
-                    else: # провод на который нажили запоминается
-                        click = True
-                        coords_for_rect = self.get_coords(event.pos)
-                        color = self.get_color(event.pos)
+                            click = True
+                            coords_for_rect = self.get_coords(event.pos)
+                            color = self.get_color(event.pos)
                 if event.type == TIMERUNOUT:
                     a = 'defeat'
                 if event.type == TIMER:
                     self.time -= 1
-            self.screen.fill((0, 0, 0))
             pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
             for coords in self.left_wires_coords.keys():
                 pygame.draw.rect(self.screen, self.left_wires_coords[coords], coords)
@@ -1132,7 +963,7 @@ def running(screen, v=None):  # функция, отвечающая за пер
     pygame.display.set_caption('Игра')  # меняем заголовок окна
     shuffle(minigames)  # меняем последовательность в списке
     a = minigames.pop()  # берем элемент из списка, одновременно удалем число
-    a = 3  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # a = 3  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if a == 0:  # вызываем игру в зависимости от числа
         Summas(screen, v)
     elif a == 1:
