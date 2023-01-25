@@ -368,7 +368,7 @@ class SearchCouples(Board): # класс мини игры SearchCouples
         running = True
         # создается событие время истекло и запускается таймер
         TIMERUNOUT = pygame.USEREVENT + 1
-        pygame.time.set_timer(TIMERUNOUT, 20000)
+        pygame.time.set_timer(TIMERUNOUT, 100000)
 
         # создается событие изменяющее оставшееся время на экране
         TIMER = pygame.USEREVENT + 2
@@ -853,7 +853,7 @@ class Summas(Board):
 
         # создается событие время истекло и запускается таймер
         TIMERUNOUT = pygame.USEREVENT + 1
-        pygame.time.set_timer(TIMERUNOUT, 20000)
+        pygame.time.set_timer(TIMERUNOUT, 500000)
 
         # создается событие изменяющее оставшееся время на экране
         TIMER = pygame.USEREVENT + 2
