@@ -1,5 +1,4 @@
 import sys
-
 import pygame
 import os
 from random import randrange, shuffle, choice
@@ -13,7 +12,7 @@ size2 = w, h = 650, 350
 screen = pygame.display.set_mode(size2)
 clock = pygame.time.Clock()
 fps = 60
-speed = 20
+speed = 10
 bg0 = pygame.image.load(r'data\first_screen.png')
 bg0_1 = pygame.image.load(r'data\authors.png')
 bg = pygame.image.load(r'data\room1.png')
@@ -679,42 +678,43 @@ class ConnectingWires:
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if click: # когда провод уже выбран, проверяется на совпадение цветв пары
-                        if self.get_color(event.pos) == color:
-                            click = False
-                            if coords_for_rect == self.get_coords(event.pos):
-                                pass
-                            else:
-                                count_of_connected_wires += 1
-                                if coords_for_rect[0] < self.get_coords(event.pos)[0]:
-                                    b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
-                                         self.get_color(event.pos))
-                                    starts_and_ends.append(b)
+                    if self.get_coords(event.pos):
+                        if click:
+                            if self.get_color(event.pos) == color:
+                                click = False
+                                if coords_for_rect == self.get_coords(event.pos):
+                                    pass
                                 else:
-                                    b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
-                                         self.get_color(event.pos))
-                                    starts_and_ends.append(b)
+                                    count_of_connected_wires += 1
+                                    if coords_for_rect[0] < self.get_coords(event.pos)[0]:
+                                        b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
+                                             self.get_color(event.pos))
+                                        starts_and_ends.append(b)
+                                    else:
+                                        b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
+                                             self.get_color(event.pos))
+                                        starts_and_ends.append(b)
+                            else:
+                                count_of_wrong_click += 1
+                                if count_of_wrong_click == 1:
+                                    self.hard3.kill()
+                                if count_of_wrong_click == 2:
+                                    self.hard2.kill()
+                                if count_of_wrong_click == 3:
+                                    self.hard1.kill()
                         else:
-                            count_of_wrong_click += 1
-                            if count_of_wrong_click == 1:
-                                self.hard3.kill()
-                            if count_of_wrong_click == 2:
-                                self.hard2.kill()
-                            if count_of_wrong_click == 3:
-                                self.hard1.kill()
-                    else: # провод на который нажили запоминается
-                        check = True
-                        print(self.get_coords(event.pos))
-                        print(starts_and_ends)
-                        for elem in starts_and_ends:
-                            if (self.get_coords(event.pos)[0] + 60, self.get_coords(event.pos)[1] + 9) in elem:
-                                check = False
-                            elif (self.get_coords(event.pos)[0], self.get_coords(event.pos)[1] + 9) in elem:
-                                check = False
-                        if check:
-                            click = True
-                            coords_for_rect = self.get_coords(event.pos)
-                            color = self.get_color(event.pos)
+                            check = True
+                            print(self.get_coords(event.pos))
+                            print(starts_and_ends)
+                            for elem in starts_and_ends:
+                                if (self.get_coords(event.pos)[0] + 60, self.get_coords(event.pos)[1] + 9) in elem:
+                                    check = False
+                                elif (self.get_coords(event.pos)[0], self.get_coords(event.pos)[1] + 9) in elem:
+                                    check = False
+                            if check:
+                                click = True
+                                coords_for_rect = self.get_coords(event.pos)
+                                color = self.get_color(event.pos)
                 if event.type == TIMERUNOUT:
                     a = 'defeat'
                 if event.type == TIMER:
