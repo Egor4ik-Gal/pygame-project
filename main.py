@@ -670,7 +670,7 @@ class ConnectingWires:
         color = None
         count_of_wrong_click = 0
         count_of_connected_wires = 0
-        starts_and_ends = [] # список начал, концов, цветов соединенный прводов; нужен для рисования на экране
+        starts_and_ends = []  # список начал, концов, цветов соединенный прводов; нужен для рисования на экране
 
         while running:
             screen.fill((0, 0, 0))
@@ -704,8 +704,6 @@ class ConnectingWires:
                                     self.hard1.kill()
                         else:
                             check = True
-                            print(self.get_coords(event.pos))
-                            print(starts_and_ends)
                             for elem in starts_and_ends:
                                 if (self.get_coords(event.pos)[0] + 60, self.get_coords(event.pos)[1] + 9) in elem:
                                     check = False
@@ -980,7 +978,6 @@ def running(screen, v=None):  # функция, отвечающая за пер
     pygame.display.set_caption('Игра')  # меняем заголовок окна
     shuffle(minigames)  # меняем последовательность в списке
     a = minigames.pop()  # берем элемент из списка, одновременно удалем число
-    # a = 3  # не забыть удалить!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if a == 0:  # вызываем игру в зависимости от числа
         Summas(screen, v)
     elif a == 1:
