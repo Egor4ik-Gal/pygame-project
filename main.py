@@ -1,4 +1,5 @@
 import sys
+
 import pygame
 import os
 from random import randrange, shuffle, choice
@@ -12,7 +13,7 @@ size2 = w, h = 650, 350
 screen = pygame.display.set_mode(size2)
 clock = pygame.time.Clock()
 fps = 60
-speed = 10
+speed = 20
 bg0 = pygame.image.load(r'data\first_screen.png')
 bg0_1 = pygame.image.load(r'data\authors.png')
 bg = pygame.image.load(r'data\room1.png')
@@ -523,6 +524,7 @@ class ConnectingWires:
         text2_y = 10
         screen.blit(text2, (text2_x, text2_y))
 
+        # создаются спрайты показывающие количество "жизней"
         self.all_sprites = pygame.sprite.Group()
 
         self.hard1 = pygame.sprite.Sprite()
@@ -656,8 +658,11 @@ class ConnectingWires:
     def playing(self):
         running = True
 
+        # создается событие время истекло и запускается таймер
         TIMERUNOUT = pygame.USEREVENT + 1
         pygame.time.set_timer(TIMERUNOUT, 20000)
+
+        # создается событие изменяющее оставшееся время на экране
         TIMER = pygame.USEREVENT + 2
         pygame.time.set_timer(TIMER, 1000)
 
@@ -666,7 +671,7 @@ class ConnectingWires:
         color = None
         count_of_wrong_click = 0
         count_of_connected_wires = 0
-        starts_and_ends = []
+        starts_and_ends = [] # список начал, концов, цветов соединенный прводов; нужен для рисования на экране
 
         while running:
             screen.fill((0, 0, 0))
@@ -674,31 +679,39 @@ class ConnectingWires:
                 if event.type == pygame.QUIT:
                     running = False
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.get_coords(event.pos):
-                        if click:
-                            if self.get_color(event.pos) == color:
-                                click = False
-                                if coords_for_rect == self.get_coords(event.pos):
-                                    pass
-                                else:
-                                    count_of_connected_wires += 1
-                                    if coords_for_rect[0] < self.get_coords(event.pos)[0]:
-                                        b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
-                                             self.get_color(event.pos))
-                                        starts_and_ends.append(b)
-                                    else:
-                                        b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
-                                             self.get_color(event.pos))
-                                        starts_and_ends.append(b)
+                    if click: # когда провод уже выбран, проверяется на совпадение цветв пары
+                        if self.get_color(event.pos) == color:
+                            click = False
+                            if coords_for_rect == self.get_coords(event.pos):
+                                pass
                             else:
-                                count_of_wrong_click += 1
-                                if count_of_wrong_click == 1:
-                                    self.hard3.kill()
-                                if count_of_wrong_click == 2:
-                                    self.hard2.kill()
-                                if count_of_wrong_click == 3:
-                                    self.hard1.kill()
+                                count_of_connected_wires += 1
+                                if coords_for_rect[0] < self.get_coords(event.pos)[0]:
+                                    b = ((210, coords_for_rect[1] + 9), (440, self.get_coords(event.pos)[1] + 9),
+                                         self.get_color(event.pos))
+                                    starts_and_ends.append(b)
+                                else:
+                                    b = ((210, self.get_coords(event.pos)[1] + 9), (440, coords_for_rect[1] + 9),
+                                         self.get_color(event.pos))
+                                    starts_and_ends.append(b)
                         else:
+                            count_of_wrong_click += 1
+                            if count_of_wrong_click == 1:
+                                self.hard3.kill()
+                            if count_of_wrong_click == 2:
+                                self.hard2.kill()
+                            if count_of_wrong_click == 3:
+                                self.hard1.kill()
+                    else: # провод на который нажили запоминается
+                        check = True
+                        print(self.get_coords(event.pos))
+                        print(starts_and_ends)
+                        for elem in starts_and_ends:
+                            if (self.get_coords(event.pos)[0] + 60, self.get_coords(event.pos)[1] + 9) in elem:
+                                check = False
+                            elif (self.get_coords(event.pos)[0], self.get_coords(event.pos)[1] + 9) in elem:
+                                check = False
+                        if check:
                             click = True
                             coords_for_rect = self.get_coords(event.pos)
                             color = self.get_color(event.pos)
@@ -706,6 +719,9 @@ class ConnectingWires:
                     a = 'defeat'
                 if event.type == TIMER:
                     self.time -= 1
+
+            # рисование всего на экране
+            self.screen.fill((0, 0, 0))
             pygame.draw.rect(self.screen, (100, 100, 100), (150, 0, 350, 350))
             for coords in self.left_wires_coords.keys():
                 pygame.draw.rect(self.screen, self.left_wires_coords[coords], coords)
@@ -813,13 +829,14 @@ class Summas(Board):
 
             if room == 1:
                 flag_minigames1 = True
-            elif room == 2 and v == 0:
-                flag_minigames2 = True
+            elif room == 2 and v == 0:  # переменная v - необязательная
+                flag_minigames2 = True  # она нужна для различия двух мини-игр в одной комнате
             elif room == 2 and v == 1:
                 flag_minigames2_2 = True
             elif room == 3:
                 flag_minigames3 = True
-            running3()
+            running3()  # запускает основной цикл
+
         else:
             font = pygame.font.Font(None, 40)
             text = font.render("Вы проиграли!!!", True, (100, 255, 100))
